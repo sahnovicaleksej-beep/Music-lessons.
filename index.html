@@ -3,8 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MUSIC LESSONS</title>
+    <title>MUSIC</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=114683681', 'ym');
+
+        ym(114683681, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/114683681" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+
     <style>
         :root {
             --bg: linear-gradient(135deg, #f5e6d3 0%, #b2d8d8 100%);
@@ -14,6 +29,7 @@
             --text: #2c3e50;
             --accent: #00bcd4;
             --gold: #f1c40f;
+            --danger: #e74c3c;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -24,10 +40,12 @@
             #app { max-width: 480px; height: 90dvh; max-height: 850px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
         }
 
+        /* Screens */
         .screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease; opacity: 0; pointer-events: none; padding: 15px; overflow-y: auto; z-index: 1; }
         .screen.active { opacity: 1; pointer-events: auto; z-index: 10; }
 
-        .panel { background: var(--panel); padding: 20px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); width: 100%; max-width: 340px; text-align: center; }
+        /* UI Elements */
+        .panel { background: var(--panel); padding: 20px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); width: 100%; max-width: 360px; text-align: center; }
         h2 { color: var(--text); margin-bottom: 15px; font-size: 22px; }
         
         input { width: 100%; padding: 15px; margin-bottom: 12px; border: 2px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; background: #f9f9f9; transition: 0.2s; text-align: center; font-weight: 700;}
@@ -38,18 +56,23 @@
         .btn-primary { background: var(--primary); box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3); }
         .btn-secondary { background: #34495e; }
         .btn-green { background: var(--green); color: var(--text); box-shadow: 0 4px 15px rgba(139, 195, 74, 0.3); }
+        .btn-gold { background: linear-gradient(135deg, #f1c40f, #e67e22); color: white; }
         .btn-sm { padding: 10px; font-size: 14px; margin-top: 5px; }
         .btn:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
 
+        /* Header */
         .header { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; z-index: 5; }
         .badge { background: var(--panel); padding: 8px 15px; border-radius: 20px; font-weight: 800; color: var(--text); box-shadow: 0 4px 10px rgba(0,0,0,0.08); font-size: 15px; }
         .badge.trophy { color: var(--gold); font-size: 18px; }
+        .rank-badge { font-size: 12px; color: #8e44ad; font-weight: 900; text-transform: uppercase; display: block; text-align: center; margin-top: 2px;}
 
+        /* Mode Grid */
         .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 20px; }
         .mode-card { background: var(--panel); padding: 15px 10px; border-radius: 15px; font-weight: 800; color: var(--text); text-align: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-size: 14px; position: relative; }
         .mode-card:active { transform: scale(0.95); }
         .stars-display { font-size: 12px; color: var(--gold); margin-top: 5px; letter-spacing: 1px;}
 
+        /* Game Area */
         .game-container { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 20px; padding-top: 60px; }
         
         .progress-bar { width: 100%; max-width: 400px; height: 10px; background: #ddd; border-radius: 5px; margin-bottom: 10px; overflow: hidden; }
@@ -65,31 +88,45 @@
         .opt-btn.wrong { background: #f44336; color: white; box-shadow: 0 5px 0 #d32f2f; }
         .opt-btn:disabled { pointer-events: none; }
 
+        /* Piano */
+        .piano-container { display: flex; width: 100%; max-width: 400px; height: 120px; margin-top: 20px; position: relative; }
+        .piano-key { flex: 1; background: #fff; border: 1px solid #ccc; border-radius: 0 0 10px 10px; margin: 0 2px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; font-weight: 800; color: #999; cursor: pointer; box-shadow: 0 4px 0 #ddd; transition: 0.1s; }
+        .piano-key:active, .piano-key.active { background: #e0e0e0; transform: translateY(4px); box-shadow: 0 0 0 #ddd; }
+        .piano-key.correct { background: #a5d6a7; }
+
+        /* Teacher Overlay */
         .teacher-area { position: absolute; bottom: 160px; left: 15px; display: flex; align-items: flex-end; gap: 10px; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 20; pointer-events: none; }
         .teacher-area.show { opacity: 1; transform: translateY(0); }
-        .teacher-avatar { width: 60px; height: 60px; background: var(--panel); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 35px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); overflow: hidden; }
-        .teacher-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .teacher-avatar { width: 60px; height: 60px; background: var(--panel); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 35px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .teacher-bubble { background: white; padding: 10px 15px; border-radius: 15px; border-bottom-left-radius: 0; font-weight: 700; color: var(--text); font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 200px; }
 
+        /* Modal */
         .modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 40; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.show { opacity: 1; pointer-events: auto; }
         .modal-content { background: var(--panel); padding: 30px 20px; border-radius: 20px; text-align: center; width: 90%; max-width: 320px; transform: scale(0.8); transition: 0.3s; }
         .modal-overlay.show .modal-content { transform: scale(1); }
         .big-stars { font-size: 40px; margin: 15px 0; color: var(--gold); text-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        .mp-lobby { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px;}
-        .mp-scores { display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin-bottom: 10px; font-weight: 900; font-size: 18px;}
-        .mp-player { padding: 10px; border-radius: 10px; background: var(--panel); text-align: center; flex: 1; margin: 0 5px;}
-        .mp-player.active { border: 3px solid var(--accent); }
+        /* Shop */
+        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        .shop-item { background: #f0f0f0; padding: 10px; border-radius: 15px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+        .shop-item h4 { font-size: 14px; margin-bottom: 5px; color: var(--text); }
+        .shop-item p { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .shop-price { font-weight: 900; color: var(--gold); font-size: 16px; margin-bottom: 5px; }
+        .shop-item button { padding: 8px; font-size: 12px; border-radius: 10px; }
 
         .close-btn { position: absolute; top: 15px; right: 15px; background: #ff4757; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; display: flex; justify-content: center; align-items: center; z-index: 30; box-shadow: 0 4px 10px rgba(255, 71, 87, 0.4); }
         .note-staff { width: 100%; height: 100%; }
-        .hidden { display: none !important; }
+        
+        /* Themes */
+        .theme-neon { --panel: rgba(30, 30, 40, 0.95); --text: #fff; --bg: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+        .theme-retro { --panel: rgba(255, 255, 200, 0.95); --text: #333; --bg: linear-gradient(135deg, #f5e6d3 0%, #d4a373 100%); }
     </style>
 </head>
 <body>
 
 <div id="app">
+    <!-- АВТОРИЗАЦИЯ -->
     <div id="screen-auth" class="screen active">
         <div class="panel">
             <h2>Вход</h2>
@@ -100,37 +137,56 @@
         </div>
     </div>
 
+    <!-- ГЛАВНОЕ МЕНЮ -->
     <div id="screen-menu" class="screen">
         <div class="header">
             <div class="badge" id="user-name">...</div>
             <div class="badge trophy">🏆 <span id="user-trophy">0</span></div>
         </div>
         <div class="panel">
-            <h1 style="color:#8e44ad; font-size:42px; font-weight:900; margin-bottom:20px; letter-spacing: 2px;">MUSIC LESSONS</h1>
-            <button class="btn btn-green" id="btn-play" onclick="UI.loadModes(); UI.show('screen-modes')">🎮 Играть</button>
-            <button class="btn btn-secondary" onclick="Multiplayer.showMenu()">⚔️ Дуэль</button>
+            <h1 style="color:#8e44ad; font-size:42px; font-weight:900; margin-bottom:15px; letter-spacing: 2px;">MUSIC</h1>
+            <div class="rank-badge" id="user-rank">Новичок</div>
+            
+            <button class="btn btn-green" onclick="UI.show('screen-modes')">🎮 Играть</button>
+            <button class="btn btn-gold" onclick="Multiplayer.showMenu()">⚔️ Дуэль</button>
+            <button class="btn btn-secondary" onclick="Daily.claim()" id="daily-btn">🎁 Ежедневный подарок</button>
             <button class="btn btn-secondary" onclick="UI.loadTeachers()">👨‍🏫 Учителя</button>
-            <button class="btn btn-secondary" onclick="UI.show('screen-gift')">🎁 Подарить трофей</button>
+            <button class="btn btn-secondary" onclick="UI.loadShop()">🛒 Магазин</button>
+            <button class="btn btn-secondary" onclick="UI.show('screen-gift')">🤝 Подарить</button>
             <button class="btn btn-secondary" onclick="UI.show('screen-promo')">🔑 Промокод</button>
-            <button class="btn btn-sm" style="background:transparent; color:#666; margin-top:15px; box-shadow:none;" onclick="Auth.logout()">Выйти из аккаунта</button>
+            <button class="btn btn-sm" style="background:transparent; color:#666; margin-top:15px; box-shadow:none;" onclick="Auth.logout()">Выйти</button>
         </div>
     </div>
 
+    <!-- РЕЖИМЫ -->
     <div id="screen-modes" class="screen">
         <button class="close-btn" onclick="UI.show('screen-menu')">×</button>
         <h2 style="margin-top: 40px;">Режимы обучения</h2>
         <div class="mode-grid" id="mode-list"></div>
+        <button class="btn btn-primary" style="max-width:300px; margin-top:20px;" onclick="UI.show('screen-menu')">Назад</button>
     </div>
 
+    <!-- УЧИТЕЛЯ -->
     <div id="screen-teachers" class="screen">
         <button class="close-btn" onclick="UI.show('screen-menu')">×</button>
         <div class="panel">
             <h2>Ваш учитель</h2>
-            <div id="teacher-list"></div>
-            <button class="btn btn-primary" onclick="UI.show('screen-menu')" style="margin-top:15px;">Назад</button>
+            <div id="teacher-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px;"></div>
+            <button class="btn btn-primary" onclick="UI.show('screen-menu')">Назад</button>
         </div>
     </div>
 
+    <!-- МАГАЗИН -->
+    <div id="screen-shop" class="screen">
+        <button class="close-btn" onclick="UI.show('screen-menu')">×</button>
+        <div class="panel" style="max-width:400px;">
+            <h2>Магазин</h2>
+            <div class="shop-grid" id="shop-list"></div>
+            <button class="btn btn-primary" style="margin-top:20px;" onclick="UI.show('screen-menu')">Назад</button>
+        </div>
+    </div>
+
+    <!-- ПРОМОКОД -->
     <div id="screen-promo" class="screen">
         <button class="close-btn" onclick="UI.show('screen-menu')">×</button>
         <div class="panel">
@@ -141,41 +197,46 @@
         </div>
     </div>
 
+    <!-- ПОДАРОК -->
     <div id="screen-gift" class="screen">
         <button class="close-btn" onclick="UI.show('screen-menu')">×</button>
         <div class="panel">
             <h2>Подарить трофей</h2>
-            <p style="margin-bottom: 15px; color:#666; font-size:14px;">Помогите другу! Введите его ник.</p>
+            <p style="margin-bottom: 15px; color:#666; font-size:14px;">Введите ник друга.</p>
             <input type="text" id="gift-user" placeholder="Никнейм друга" autocapitalize="none">
             <button class="btn btn-primary" onclick="Social.sendGift()">Отправить 1 🏆</button>
             <div id="gift-msg" style="margin-top:10px; font-weight:bold; font-size:14px;"></div>
         </div>
     </div>
 
+    <!-- МУЛЬТИПЛЕЕР ЛОББИ -->
     <div id="screen-mp-lobby" class="screen">
         <button class="close-btn" onclick="UI.show('screen-menu')">×</button>
         <div class="panel">
             <h2>Дуэль</h2>
             <div class="mp-lobby">
-                <button class="btn btn-primary" onclick="Multiplayer.createRoom()">Создать комнату</button>
-                <div style="margin: 10px 0; font-weight:bold;">ИЛИ</div>
-                <input type="text" id="mp-code-input" placeholder="Код комнаты (4 цифры)" maxlength="4">
-                <button class="btn btn-green" onclick="Multiplayer.joinRoom()">Подключиться</button>
+                <button class="btn btn-primary" onclick="Multiplayer.quickMatch()">⚡ Быстрая игра (Автоподбор)</button>
+                <div style="margin: 15px 0; font-weight:bold; color:#666;">— ИЛИ —</div>
+                <button class="btn btn-secondary" onclick="Multiplayer.createRoom()">Создать комнату</button>
+                <input type="text" id="mp-code-input" placeholder="Код комнаты (4 цифры)" maxlength="4" style="margin-top:10px;">
+                <button class="btn btn-green" onclick="Multiplayer.joinRoom()">Подключиться по коду</button>
             </div>
             <div id="mp-msg" style="margin-top:15px; font-weight:bold; color:#f44336;"></div>
         </div>
     </div>
 
+    <!-- ЭКРАН ОЖИДАНИЯ МУЛЬТИПЛЕЕРА -->
     <div id="screen-mp-wait" class="screen">
         <div class="panel">
-            <h2>Ожидание игрока...</h2>
-            <p>Скажите другу этот код:</p>
+            <h2 id="mp-wait-title">Ожидание игрока...</h2>
+            <p id="mp-wait-subtitle" style="color:#666;">Скажите другу этот код:</p>
             <h1 id="mp-room-code" style="font-size: 48px; color: var(--accent); margin: 20px 0; letter-spacing: 5px;">0000</h1>
-            <p style="font-size:13px; color:#666;">Игра начнется автоматически, когда друг подключится.</p>
-            <button class="btn btn-secondary" onclick="Multiplayer.cancelWait()" style="margin-top:15px;">Отмена</button>
+            <p style="font-size:13px; color:#666;">Игра начнется автоматически.</p>
+            <button class="btn btn-secondary" onclick="Multiplayer.cancelWait()" style="margin-top:20px;">Отмена</button>
         </div>
     </div>
 
+    <!-- ИГРА (ОДИНОЧНАЯ И МУЛЬТИПЛЕЕР) -->
     <div id="screen-game" class="screen">
         <button class="close-btn" id="game-close-btn" onclick="Game.quit()">×</button>
         
@@ -184,8 +245,8 @@
         </div>
 
         <div class="header" id="game-header-mp" style="display: none; justify-content: space-between; align-items: flex-start;">
-            <div class="mp-player" id="mp-p1">Вы: <span>0</span></div>
-            <div class="mp-player" id="mp-p2">Враг: <span>0</span></div>
+            <div class="mp-player" id="mp-p1" style="font-size: 16px; font-weight: bold; background: var(--panel); padding: 8px 12px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">Вы: <span>0</span></div>
+            <div class="mp-player" id="mp-p2" style="font-size: 16px; font-weight: bold; background: var(--panel); padding: 8px 12px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">Соперник: <span>0</span></div>
         </div>
         
         <div class="game-container" id="game-container">
@@ -193,71 +254,88 @@
                 <div class="progress-fill" id="progress-fill"></div>
             </div>
 
-            <div class="staff-wrapper">
+            <div class="staff-wrapper" id="staff-wrapper">
                 <div class="staff-box" id="staff-box"></div>
             </div>
             
             <div style="margin-top:15px; width:100%; text-align:center;" id="extra-controls"></div>
             
             <div class="options-grid" id="options-grid"></div>
+            <div class="piano-container" id="piano-container" style="display:none;"></div>
         </div>
 
+        <!-- Учитель в игре -->
         <div class="teacher-area" id="teacher-area">
             <div class="teacher-avatar" id="teacher-avatar">👨‍🏫</div>
             <div class="teacher-bubble" id="teacher-bubble">Давай проверим твой слух!</div>
         </div>
     </div>
 
+    <!-- РЕЗУЛЬТАТЫ УРОВНЯ -->
     <div id="modal-result" class="modal-overlay">
         <div class="modal-content">
-            <h2 id="result-title">Уровень пройден!</h2>
+            <h2>Уровень пройден!</h2>
             <div class="big-stars" id="result-stars">☆☆☆</div>
             <p id="result-text" style="margin-bottom: 20px; font-weight: 700;">Правильных ответов: 0/10</p>
-            <button class="btn btn-primary" id="result-next-btn" onclick="Game.nextLevel()">Следующий уровень</button>
+            <p style="color:var(--gold); font-weight:900; margin-bottom:20px;">+ <span id="result-reward">0</span> 🏆</p>
+            <button class="btn btn-primary" onclick="Game.nextLevel()">Дальше</button>
             <button class="btn btn-secondary" onclick="UI.show('screen-modes'); document.getElementById('modal-result').classList.remove('show');">В меню</button>
         </div>
     </div>
 </div>
 
 <script>
+    // --- КОНФИГУРАЦИЯ ---
     const DB_URL = 'https://my-world-f590e-default-rtdb.firebaseio.com';
     
+    // Вспомогательная функция для безопасной отправки целей в Метрику
+    function reachGoal(goalName) {
+        if (typeof ym === 'function') {
+            try { ym(114683681, 'reachGoal', goalName); } catch(e) {}
+        }
+    }
+
     const TEACHERS = {
-        'default': { name: 'Профессор', icon: '👨‍🏫', correct: ['Отлично!', 'Верно!', 'Точно в цель!'], wrong: ['Ошибочка...', 'Попробуй еще!', 'Немного мимо.'] },
-        'green_circle': { name: 'Зелёный Круг', icon: '🟢', img: 'змея_4.png', correct: ['Красавчик!', 'Зелёный свет!', 'В яблочко!'], wrong: ['Красный свет!', 'Стоп!', 'Ну куда же ты...'] }
+        'default': { name: 'Профессор', icon: '👨‍🏫', correct: ['Отлично!', 'Верно!'], wrong: ['Ошибочка...', 'Попробуй еще!'], price: 0 },
+        'green_circle': { name: 'Зелёный Круг', icon: '🟢', correct: ['Красавчик!', 'В яблочко!'], wrong: ['Красный свет!', 'Стоп!'], price: 0 },
+        'jazzman': { name: 'Джазмен', icon: '🎷', correct: ['Классный рифф!', 'Свинг!'], wrong: ['Не в такт...', 'Мимо!'], price: 50 },
+        'metronome': { name: 'Метроном', icon: '⏱️', correct: ['Точно в долю!', 'Идеальный ритм!'], wrong: ['Сбился с такта!', 'Слишком медленно!'], price: 100 },
+        'robot': { name: 'Робот-Синт', icon: '🤖', correct: ['01001111 (ОТЛИЧНО)', 'ДАННЫЕ ВЕРНЫ'], wrong: ['ОШИБКА 404', 'НЕКОРРЕКТНО'], price: 200 }
     };
 
-    // ИСПРАВЛЕНО: правильная привязка нот к позициям скрипичного ключа.
-    // Линии стана (снизу вверх): 90 (ми), 75 (соль), 60 (си), 45 (ре), 30 (фа).
-    // Между линиями: 82.5 (фа), 67.5 (ля), 52.5 (до), 37.5 (ми).
-    // Под станом: 97.5 (ре), 105 (до, добавочная).
-    // Над станом: 22.5 (соль), 15 (ля, добавочная 1), 7.5 (си, добавочная 2).
+    const THEMES = {
+        'default': { name: 'Стандарт', class: '' },
+        'neon': { name: 'Неон', class: 'theme-neon', price: 300 },
+        'retro': { name: 'Ретро', class: 'theme-retro', price: 150 }
+    };
+
     const NOTES = {
         octave1: [
-            { id: 'до1',  name: 'до',  freq: 261.63, y: 105 },
-            { id: 'ре1',  name: 'ре',  freq: 293.66, y: 97.5 },
-            { id: 'ми1',  name: 'ми',  freq: 329.63, y: 90 },
-            { id: 'фа1',  name: 'фа',  freq: 349.23, y: 82.5 },
-            { id: 'соль1',name: 'соль',freq: 392.00, y: 75 },
-            { id: 'ля1',  name: 'ля',  freq: 440.00, y: 67.5 },
-            { id: 'си1',  name: 'си',  freq: 493.88, y: 60 }
+            { id: 'до1', name: 'до', freq: 261.63, y: 90 },
+            { id: 'ре1', name: 'ре', freq: 293.66, y: 82.5 },
+            { id: 'ми1', name: 'ми', freq: 329.63, y: 75 },
+            { id: 'фа1', name: 'фа', freq: 349.23, y: 67.5 },
+            { id: 'соль1', name: 'соль', freq: 392.00, y: 60 },
+            { id: 'ля1', name: 'ля', freq: 440.00, y: 52.5 },
+            { id: 'си1', name: 'си', freq: 493.88, y: 45 }
         ],
         octave2: [
-            { id: 'до2',  name: 'до',  freq: 523.25, y: 52.5 },
-            { id: 'ре2',  name: 'ре',  freq: 587.33, y: 45 },
-            { id: 'ми2',  name: 'ми',  freq: 659.25, y: 37.5 },
-            { id: 'фа2',  name: 'фа',  freq: 698.46, y: 30 },
-            { id: 'соль2',name: 'соль',freq: 783.99, y: 22.5 },
-            { id: 'ля2',  name: 'ля',  freq: 880.00, y: 15 },
-            { id: 'си2',  name: 'си',  freq: 987.77, y: 7.5 }
+            { id: 'до2', name: 'до', freq: 523.25, y: 30 },
+            { id: 'ре2', name: 'ре', freq: 587.33, y: 22.5 },
+            { id: 'ми2', name: 'ми', freq: 659.25, y: 15 },
+            { id: 'фа2', name: 'фа', freq: 698.46, y: 7.5 },
+            { id: 'соль2', name: 'соль', freq: 783.99, y: 0 },
+            { id: 'ля2', name: 'ля', freq: 880.00, y: -7.5 },
+            { id: 'си2', name: 'си', freq: 987.77, y: -15 }
         ]
     };
 
     const MODES = {
-        'treble1': { name: 'Скрипичный 1 окт.', pool: 'octave1' },
-        'treble2': { name: 'Скрипичный 2 окт.', pool: 'octave2' },
+        'treble1': { name: '1 Октава', pool: 'octave1' },
+        'treble2': { name: '2 Октава', pool: 'octave2' },
         'treble12': { name: 'Две октавы', pool: 'both' },
-        'ear': { name: 'На слух', pool: 'octave1' }
+        'ear': { name: 'На слух', pool: 'octave1' },
+        'echo': { name: 'Эхо (Пианино)', pool: 'octave1' }
     };
 
     const KEYS_DATA = [
@@ -270,39 +348,52 @@
         { name: 'Ми-бемоль мажор', symbols: ['Bb', 'Eb', 'Ab'] }
     ];
 
+    // --- СОСТОЯНИЕ ---
     let state = {
         user: null,
         audioCtx: null,
         activeTeacher: 'default',
         unlocked: ['default'],
+        inventory: [],
+        activeTheme: 'default',
+        
         mode: null,
         level: 1,
         questionIndex: 0,
         correctCount: 0,
         target: null,
-        answering: false,
+        
+        echoSequence: [],
+        playerSequence: [],
+        isPlayingSequence: false,
+
+        // Мультиплеер
         isMP: false,
         mpRoom: null,
         mpRole: null,
         mpListener: null,
-        mpAnswering: false
+        mpMatchmakingInterval: null,
+        mpIsBot: false,
+        mpBotTimeout: null,
+        mpBotThinking: false
     };
 
+    // --- UI ЛОГИКА ---
     const UI = {
         show: (id) => {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         },
-        updateTrophies: (amt) => {
-            document.getElementById('user-trophy').innerText = amt;
-            document.getElementById('game-trophy').innerText = amt;
-        },
-        teacherAvatarHtml: (t, size) => {
-            const fallback = t.icon;
-            if (t.img) {
-                return `<img src="${t.img}" alt="${t.name}" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:50%;" onerror="this.replaceWith(document.createTextNode('${fallback}'))">`;
-            }
-            return `<div style="font-size:${Math.round(size*0.7)}px; line-height:1;">${fallback}</div>`;
+        updateHeader: () => {
+            document.getElementById('user-trophy').innerText = state.user.trophies;
+            document.getElementById('game-trophy').innerText = state.user.trophies;
+            
+            let rank = "Новичок";
+            if (state.user.trophies > 50) rank = "Ученик";
+            if (state.user.trophies > 150) rank = "Любитель";
+            if (state.user.trophies > 300) rank = "Профи";
+            if (state.user.trophies > 500) rank = "Маэстро";
+            document.getElementById('user-rank').innerText = rank;
         },
         loadTeachers: () => {
             const list = document.getElementById('teacher-list');
@@ -311,19 +402,49 @@
                 const isUnlocked = state.unlocked.includes(key);
                 const isActive = state.activeTeacher === key;
                 const div = document.createElement('div');
-                div.className = `mode-card ${isActive ? 'active' : ''}`;
+                div.className = `mode-card`;
                 div.style.display = 'flex'; div.style.alignItems = 'center'; div.style.gap = '15px';
                 div.style.border = isActive ? '2px solid var(--accent)' : '2px solid transparent';
-                if (!isUnlocked) div.style.opacity = '0.5';
-                div.innerHTML = `${UI.teacherAvatarHtml(t, 36)}<div style="font-weight:bold; font-size:16px;">${t.name} ${!isUnlocked?'🔒':''}</div>`;
-                if (isUnlocked) div.onclick = () => { state.activeTeacher = key; Auth.saveData(); UI.loadTeachers(); };
+                if (!isUnlocked) div.style.opacity = '0.6';
+                
+                div.innerHTML = `<div style="font-size:30px">${t.icon}</div><div style="font-weight:bold; font-size:16px; flex:1; text-align:left;">${t.name}</div>${isUnlocked ? (isActive ? '✅' : '') : '🔒'}`;
+                
+                if (isUnlocked) {
+                    div.onclick = () => { state.activeTeacher = key; Auth.saveData(); UI.loadTeachers(); };
+                }
                 list.appendChild(div);
             }
             UI.show('screen-teachers');
         },
+        loadShop: () => {
+            const grid = document.getElementById('shop-list');
+            grid.innerHTML = '';
+            
+            for (const [key, t] of Object.entries(TEACHERS)) {
+                if (t.price > 0 && !state.unlocked.includes(key)) {
+                    const el = document.createElement('div');
+                    el.className = 'shop-item';
+                    el.innerHTML = `<div style="font-size:30px">${t.icon}</div><h4>${t.name}</h4><div class="shop-price">${t.price} 🏆</div><button class="btn btn-primary" onclick="Shop.buy('teacher','${key}',${t.price})">Купить</button>`;
+                    grid.appendChild(el);
+                }
+            }
+            
+            for (const [key, t] of Object.entries(THEMES)) {
+                if (t.price > 0 && !state.inventory.includes(key)) {
+                    const el = document.createElement('div');
+                    el.className = 'shop-item';
+                    el.innerHTML = `<h4>${t.name}</h4><p>Смена фона</p><div class="shop-price">${t.price} 🏆</div><button class="btn btn-secondary" onclick="Shop.buy('theme','${key}',${t.price})">Купить</button>`;
+                    grid.appendChild(el);
+                }
+            }
+            
+            if (grid.innerHTML === '') grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#666;">Все скуплено! Вы богач.</p>';
+            UI.show('screen-shop');
+        },
         loadModes: () => {
             const grid = document.getElementById('mode-list');
             grid.innerHTML = '';
+            
             for (const [key, m] of Object.entries(MODES)) {
                 const stars = state.user.progress[key] || 0;
                 const div = document.createElement('div');
@@ -332,6 +453,7 @@
                 div.onclick = () => Game.startMode(key);
                 grid.appendChild(div);
             }
+            
             const keyStars = state.user.progress['key'] || 0;
             const kDiv = document.createElement('div');
             kDiv.className = 'mode-card';
@@ -342,27 +464,32 @@
         showTeacherSpeech: (isCorrect) => {
             const teacher = TEACHERS[state.activeTeacher] || TEACHERS['default'];
             const phrases = isCorrect ? teacher.correct : teacher.wrong;
-            const avatarEl = document.getElementById('teacher-avatar');
-            avatarEl.innerHTML = UI.teacherAvatarHtml(teacher, 60);
+            document.getElementById('teacher-avatar').innerText = teacher.icon;
             document.getElementById('teacher-bubble').innerText = phrases[Math.floor(Math.random() * phrases.length)];
             const area = document.getElementById('teacher-area');
             area.classList.add('show');
-            clearTimeout(UI._teacherTimer);
-            UI._teacherTimer = setTimeout(() => area.classList.remove('show'), 1800);
+            setTimeout(() => area.classList.remove('show'), 1800);
+        },
+        applyTheme: () => {
+            document.body.className = THEMES[state.activeTheme]?.class || '';
         }
     };
 
+    // --- АВТОРИЗАЦИЯ ---
     const Auth = {
         checkSession: () => {
             const savedUser = localStorage.getItem('music_app_user');
             if (savedUser) {
-                try { state.user = JSON.parse(savedUser); }
-                catch (e) { localStorage.removeItem('music_app_user'); return false; }
-                state.user.progress = state.user.progress || {};
+                state.user = JSON.parse(savedUser);
                 state.unlocked = state.user.unlockedTeachers || ['default'];
                 state.activeTeacher = state.user.activeTeacher || 'default';
+                state.inventory = state.user.inventory || [];
+                state.activeTheme = state.user.activeTheme || 'default';
+                if (!state.user.progress) state.user.progress = {};
+                
                 document.getElementById('user-name').innerText = state.user.username;
-                UI.updateTrophies(state.user.trophies || 0);
+                UI.updateHeader();
+                UI.applyTheme();
                 UI.show('screen-menu');
                 return true;
             }
@@ -372,22 +499,42 @@
             const u = document.getElementById('auth-user').value.trim().toLowerCase();
             const p = document.getElementById('auth-pass').value.trim();
             if (!u || !p) return document.getElementById('auth-err').innerText = "Заполните поля";
+
             try {
                 const res = await fetch(`${DB_URL}/users/${u}.json`);
                 const data = await res.json();
+
                 if (data && data.password !== p) return document.getElementById('auth-err').innerText = "Неверный пароль";
+
                 if (!data) {
-                    const newUser = { password: p, trophies: 0, unlockedTeachers: ['default'], activeTeacher: 'default', progress: {} };
+                    const newUser = { password: p, trophies: 0, unlockedTeachers: ['default'], activeTeacher: 'default', progress: {}, lastDailyClaim: 0, inventory: [], activeTheme: 'default' };
                     await fetch(`${DB_URL}/users/${u}.json`, { method: 'PUT', body: JSON.stringify(newUser) });
                     state.user = { username: u, ...newUser };
+                    reachGoal('registration'); // Метрика: регистрация
                 } else {
-                    state.user = { username: u, password: p, trophies: data.trophies || 0, unlockedTeachers: data.unlockedTeachers || ['default'], activeTeacher: data.activeTeacher || 'default', progress: data.progress || {} };
+                    state.user = { 
+                        username: u, 
+                        password: p, 
+                        trophies: data.trophies || 0, 
+                        unlockedTeachers: data.unlockedTeachers || ['default'],
+                        activeTeacher: data.activeTeacher || 'default',
+                        progress: data.progress || {},
+                        lastDailyClaim: data.lastDailyClaim || 0,
+                        inventory: data.inventory || [],
+                        activeTheme: data.activeTheme || 'default'
+                    };
+                    reachGoal('login'); // Метрика: вход
                 }
+                
                 state.unlocked = state.user.unlockedTeachers;
                 state.activeTeacher = state.user.activeTeacher;
+                state.inventory = state.user.inventory;
+                state.activeTheme = state.user.activeTheme;
                 localStorage.setItem('music_app_user', JSON.stringify(state.user));
+                
                 document.getElementById('user-name').innerText = state.user.username;
-                UI.updateTrophies(state.user.trophies);
+                UI.updateHeader();
+                UI.applyTheme();
                 UI.show('screen-menu');
             } catch (e) {
                 document.getElementById('auth-err').innerText = "Ошибка сети";
@@ -395,10 +542,18 @@
         },
         saveData: async () => {
             if (!state.user) return;
-            const payload = { trophies: state.user.trophies, unlockedTeachers: state.unlocked, activeTeacher: state.activeTeacher, progress: state.user.progress };
+            const payload = {
+                trophies: state.user.trophies,
+                unlockedTeachers: state.unlocked,
+                activeTeacher: state.activeTeacher,
+                progress: state.user.progress,
+                lastDailyClaim: state.user.lastDailyClaim,
+                inventory: state.inventory,
+                activeTheme: state.activeTheme
+            };
             localStorage.setItem('music_app_user', JSON.stringify({...state.user, ...payload}));
-            try { await fetch(`${DB_URL}/users/${state.user.username}.json`, { method: 'PATCH', body: JSON.stringify(payload) }); } catch (e) {}
-            UI.updateTrophies(state.user.trophies);
+            await fetch(`${DB_URL}/users/${state.user.username}.json`, { method: 'PATCH', body: JSON.stringify(payload) });
+            UI.updateHeader();
         },
         logout: () => {
             localStorage.removeItem('music_app_user');
@@ -409,23 +564,74 @@
         }
     };
 
+    // --- МАГАЗИН ---
+    const Shop = {
+        buy: async (type, id, price) => {
+            if (state.user.trophies < price) return alert("Недостаточно трофеев!");
+            
+            state.user.trophies -= price;
+            
+            if (type === 'teacher') {
+                state.unlocked.push(id);
+                state.activeTeacher = id;
+            } else if (type === 'theme') {
+                state.inventory.push(id);
+                state.activeTheme = id;
+                UI.applyTheme();
+            }
+            
+            await Auth.saveData();
+            UI.loadShop();
+            reachGoal('buy_' + type); // Метрика: покупка
+            alert("Покупка успешна!");
+        }
+    };
+
+    // --- ЕЖЕДНЕВНЫЙ ПОДАРОК ---
+    const Daily = {
+        claim: async () => {
+            const now = Date.now();
+            const lastClaim = state.user.lastDailyClaim || 0;
+            const cooldown = 24 * 60 * 60 * 1000;
+
+            if (now - lastClaim < cooldown) {
+                const hoursLeft = Math.ceil((cooldown - (now - lastClaim)) / (1000 * 60 * 60));
+                return alert(`Подарок уже получен! Ждите ${hoursLeft} ч.`);
+            }
+
+            state.user.lastDailyClaim = now;
+            state.user.trophies += 5;
+            await Auth.saveData();
+            reachGoal('daily_claim'); // Метрика: ежедневный подарок
+            alert("Вы получили 5 трофеев! 🎁");
+        }
+    };
+
+    // --- СОЦИАЛЬНЫЕ ---
     const Social = {
         sendGift: async () => {
             const friend = document.getElementById('gift-user').value.trim().toLowerCase();
             const msg = document.getElementById('gift-msg');
+
             if (friend === state.user.username) { msg.style.color = '#f44336'; msg.innerText = "Нельзя подарить себе!"; return; }
             if (state.user.trophies < 1) { msg.style.color = '#f44336'; msg.innerText = "У вас нет трофеев!"; return; }
+
             try {
                 const res = await fetch(`${DB_URL}/users/${friend}.json`);
                 const friendData = await res.json();
+
                 if (!friendData) { msg.style.color = '#f44336'; msg.innerText = "Игрок не найден."; return; }
+
                 state.user.trophies -= 1;
                 await Auth.saveData();
+                
                 const newFriendTrophies = (friendData.trophies || 0) + 1;
                 await fetch(`${DB_URL}/users/${friend}.json`, { method: 'PATCH', body: JSON.stringify({ trophies: newFriendTrophies }) });
+
                 msg.style.color = '#4caf50';
                 msg.innerText = `Трофей отправлен игроку ${friend}!`;
                 document.getElementById('gift-user').value = '';
+                reachGoal('send_gift'); // Метрика: подарок
             } catch (e) {
                 msg.style.color = '#f44336';
                 msg.innerText = "Ошибка сети.";
@@ -441,6 +647,7 @@
                     Auth.saveData();
                     msg.style.color = '#4caf50';
                     msg.innerText = "Учитель 'Зелёный Круг' разблокирован!";
+                    reachGoal('promo_activate'); // Метрика: активация промокода
                 } else {
                     msg.style.color = '#f39c12';
                     msg.innerText = "Уже активирован.";
@@ -452,22 +659,25 @@
         }
     };
 
+    // --- ИГРОВАЯ ЛОГИКА ---
     const Game = {
         initAudio: () => {
             if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (state.audioCtx.state === 'suspended') state.audioCtx.resume();
         },
-        playTone: (freq, duration = 1) => {
+        playPiano: (freq, duration = 1) => {
             if (!state.audioCtx) return;
-            const osc = state.audioCtx.createOscillator();
-            const gain = state.audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = freq;
-            osc.connect(gain); gain.connect(state.audioCtx.destination);
-            gain.gain.setValueAtTime(0, state.audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.5, state.audioCtx.currentTime + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + duration);
-            osc.start(); osc.stop(state.audioCtx.currentTime + duration);
+            const ctx = state.audioCtx;
+            const t = ctx.currentTime;
+            const osc1 = ctx.createOscillator(); osc1.type = 'triangle'; osc1.frequency.value = freq;
+            const osc2 = ctx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = freq * 2;
+            const filter = ctx.createBiquadFilter(); filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(3000, t); filter.frequency.exponentialRampToValueAtTime(300, t + duration);
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.5, t + 0.02); gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+            
+            osc1.connect(filter); osc2.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+            osc1.start(t); osc2.start(t); osc1.stop(t + duration); osc2.stop(t + duration);
         },
 
         startMode: (mode) => {
@@ -476,26 +686,24 @@
             state.level = 1;
             state.questionIndex = 0;
             state.correctCount = 0;
-            state.answering = false;
+            state.echoSequence = [];
+            state.playerSequence = [];
             Game.initAudio();
-            document.getElementById('game-header-single').style.display = 'flex';
-            document.getElementById('game-header-mp').style.display = 'none';
-            document.getElementById('progress-container').style.display = 'block';
+            
+            document.getElementById('progress-container').style.display = mode === 'echo' ? 'none' : 'block';
             document.getElementById('game-close-btn').onclick = () => UI.show('screen-modes');
+            
             UI.show('screen-game');
+            reachGoal('start_game_' + mode); // Метрика: начал режим
             Game.nextQuestion();
         },
 
         quit: () => {
             if (state.isMP && state.mpRoom) {
-                fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' }).catch(()=>{});
-                Multiplayer.clearListener();
+                fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' });
+                if (state.mpListener) clearInterval(state.mpListener);
             }
             state.isMP = false;
-            state.mpRoom = null;
-            state.mpRole = null;
-            state.mpAnswering = false;
-            state.answering = false;
             UI.show('screen-menu');
         },
 
@@ -504,14 +712,16 @@
         },
 
         nextQuestion: () => {
-            if (state.questionIndex >= 10) return Game.finishLevel();
-            state.answering = false;
+            if (state.mode !== 'echo' && state.questionIndex >= 10) return Game.finishLevel();
+            
             Game.updateProgress();
-            const grid = document.getElementById('options-grid');
-            grid.innerHTML = '';
-            grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+            document.getElementById('options-grid').innerHTML = '';
             document.getElementById('extra-controls').innerHTML = '';
-            if (state.mode === 'key') Game.renderKeyQuestion();
+            document.getElementById('piano-container').style.display = 'none';
+            document.getElementById('options-grid').style.display = 'grid';
+            
+            if (state.mode === 'echo') Game.startEcho();
+            else if (state.mode === 'key') Game.renderKeyQuestion();
             else if (state.mode === 'ear') Game.renderEarQuestion();
             else Game.renderNoteQuestion();
         },
@@ -524,29 +734,25 @@
                     <line x1="50" y1="60" x2="250" y2="60" stroke="#333" stroke-width="2"/>
                     <line x1="50" y1="75" x2="250" y2="75" stroke="#333" stroke-width="2"/>
                     <line x1="50" y1="90" x2="250" y2="90" stroke="#333" stroke-width="2"/>
-                    <text x="60" y="95" font-size="70" fill="#2c3e50">𝄞</text>
+                    <text x="60" y="95" font-size="70" fill="var(--text)">𝄞</text>
             `;
             if (noteY !== null) {
-                const ledgerLines = [];
-                if (noteY > 90) {
-                    for (let y = 105; y <= noteY; y += 15) ledgerLines.push(y);
-                } else if (noteY < 30) {
-                    for (let y = 15; y >= noteY; y -= 15) ledgerLines.push(y);
+                if (noteY > 90) svg += `<line x1="135" y1="${noteY}" x2="165" y2="${noteY}" stroke="#333" stroke-width="2"/>`;
+                if (noteY < 30 && noteY > 0) svg += `<line x1="135" y1="${noteY}" x2="165" y2="${noteY}" stroke="#333" stroke-width="2"/>`;
+                if (noteY <= 0) {
+                    svg += `<line x1="135" y1="${noteY}" x2="165" y2="${noteY}" stroke="#333" stroke-width="2"/>`;
+                    svg += `<line x1="135" y1="${noteY + 15}" x2="165" y2="${noteY + 15}" stroke="#333" stroke-width="2"/>`;
                 }
-                ledgerLines.forEach(y => {
-                    svg += `<line x1="135" y1="${y}" x2="165" y2="${y}" stroke="#333" stroke-width="2"/>`;
-                });
                 svg += `
-                    <ellipse cx="150" cy="${noteY}" rx="8" ry="6" transform="rotate(-20 150 ${noteY})" fill="#2c3e50"/>
-                    <line x1="158" y1="${noteY}" x2="158" y2="${noteY - 35}" stroke="#2c3e50" stroke-width="2"/>
+                    <ellipse cx="150" cy="${noteY}" rx="8" ry="6" transform="rotate(-20 150 ${noteY})" fill="var(--text)"/>
+                    <line x1="158" y1="${noteY}" x2="158" y2="${noteY - 35}" stroke="var(--text)" stroke-width="2"/>
                 `;
             }
             if (symbols) {
-                const sharpY = [30, 52.5, 37.5];
-                const flatY  = [60, 37.5, 67.5];
+                let sharpY = [30, 52.5, 37.5]; let flatY = [60, 37.5, 67.5];
                 symbols.forEach((sym, i) => {
-                    if (sym.includes('#')) svg += `<text x="${100 + i*15}" y="${sharpY[i]+5}" font-size="30" fill="#2c3e50">♯</text>`;
-                    else svg += `<text x="${100 + i*15}" y="${flatY[i]+5}" font-size="30" fill="#2c3e50">♭</text>`;
+                    if (sym.includes('#')) svg += `<text x="${100 + i*15}" y="${sharpY[i]+5}" font-size="30" fill="var(--text)">♯</text>`;
+                    else svg += `<text x="${100 + i*15}" y="${flatY[i]+5}" font-size="30" fill="var(--text)">♭</text>`;
                 });
             }
             svg += `</svg>`;
@@ -559,50 +765,45 @@
             else if (state.mode === 'treble2') pool = NOTES.octave2;
             else pool = [...NOTES.octave1, ...NOTES.octave2];
 
-            const target = pool[Math.floor(Math.random() * pool.length)];
-            state.target = target;
-            Game.drawStaff(target.y);
-            Game.playTone(target.freq, 1);
+            state.target = pool[Math.floor(Math.random() * pool.length)];
+            Game.drawStaff(state.target.y);
+            Game.playPiano(state.target.freq);
 
-            const correctName = target.name;
             const uniqueNames = [...new Set(pool.map(n => n.name))].sort(() => Math.random() - 0.5);
             const grid = document.getElementById('options-grid');
             uniqueNames.forEach(name => {
                 const b = document.createElement('button');
                 b.className = 'opt-btn'; b.innerText = name;
                 b.onclick = () => {
-                    if (name === correctName) { b.classList.add('correct'); Game.handleCorrect(); }
-                    else { b.classList.add('wrong'); Game.handleWrong(b, correctName); }
+                    if (name === state.target.name) { b.classList.add('correct'); Game.handleCorrect(); }
+                    else { b.classList.add('wrong'); Game.handleWrong(b, state.target.name); }
                 };
                 grid.appendChild(b);
             });
         },
 
         renderEarQuestion: () => {
-            const target = NOTES.octave1[Math.floor(Math.random() * NOTES.octave1.length)];
-            state.target = target;
+            state.target = NOTES.octave1[Math.floor(Math.random() * NOTES.octave1.length)];
             document.getElementById('staff-box').innerHTML = `<div style="font-size:80px; text-align:center; margin-top:20px;">🎧</div>`;
-            document.getElementById('extra-controls').innerHTML = `<button class="btn btn-primary btn-sm" style="max-width:200px; margin:0 auto;" onclick="Game.playTone(${target.freq}, 1.5)">🔊 Слушать снова</button>`;
-            Game.playTone(target.freq, 1.5);
-            const correctName = target.name;
+            document.getElementById('extra-controls').innerHTML = `<button class="btn btn-primary btn-sm" style="max-width:200px; margin:0 auto;" onclick="Game.playPiano(${state.target.freq}, 1.5)">🔊 Слушать снова</button>`;
+            Game.playPiano(state.target.freq, 1.5);
+
             const uniqueNames = [...new Set(NOTES.octave1.map(n => n.name))].sort(() => Math.random() - 0.5);
             const grid = document.getElementById('options-grid');
             uniqueNames.forEach(name => {
                 const b = document.createElement('button');
                 b.className = 'opt-btn'; b.innerText = name;
                 b.onclick = () => {
-                    if (name === correctName) { b.classList.add('correct'); Game.handleCorrect(); }
-                    else { b.classList.add('wrong'); Game.handleWrong(b, correctName); }
+                    if (name === state.target.name) { b.classList.add('correct'); Game.handleCorrect(); }
+                    else { b.classList.add('wrong'); Game.handleWrong(b, state.target.name); }
                 };
                 grid.appendChild(b);
             });
         },
 
         renderKeyQuestion: () => {
-            const target = KEYS_DATA[Math.floor(Math.random() * KEYS_DATA.length)];
-            state.target = target;
-            Game.drawStaff(null, target.symbols);
-            const correctName = target.name;
+            state.target = KEYS_DATA[Math.floor(Math.random() * KEYS_DATA.length)];
+            Game.drawStaff(null, state.target.symbols);
             const options = [...KEYS_DATA].sort(() => Math.random() - 0.5);
             const grid = document.getElementById('options-grid');
             grid.style.gridTemplateColumns = '1fr 1fr';
@@ -610,16 +811,97 @@
                 const b = document.createElement('button');
                 b.className = 'opt-btn'; b.style.borderRadius = '15px'; b.style.aspectRatio = 'auto'; b.style.padding = '15px'; b.innerText = k.name;
                 b.onclick = () => {
-                    if (k.name === correctName) { b.classList.add('correct'); Game.handleCorrect(); }
-                    else { b.classList.add('wrong'); Game.handleWrong(b, correctName); }
+                    if (k.name === state.target.name) { b.classList.add('correct'); Game.handleCorrect(); }
+                    else { b.classList.add('wrong'); Game.handleWrong(b, state.target.name); }
                 };
                 grid.appendChild(b);
             });
         },
 
+        startEcho: () => {
+            document.getElementById('staff-box').innerHTML = `<div style="font-size:60px; text-align:center; margin-top:40px;">🎹</div>`;
+            document.getElementById('options-grid').style.display = 'none';
+            document.getElementById('piano-container').style.display = 'flex';
+            document.getElementById('piano-container').innerHTML = '';
+            
+            NOTES.octave1.forEach(n => {
+                const key = document.createElement('div');
+                key.className = 'piano-key';
+                key.innerText = n.name;
+                key.dataset.id = n.id;
+                key.dataset.freq = n.freq;
+                key.onclick = () => Game.handlePianoPress(n, key);
+                document.getElementById('piano-container').appendChild(key);
+            });
+
+            const length = Math.min(3 + Math.floor(state.level / 2), 5);
+            state.echoSequence = [];
+            for (let i = 0; i < length; i++) {
+                state.echoSequence.push(NOTES.octave1[Math.floor(Math.random() * NOTES.octave1.length)]);
+            }
+            state.playerSequence = [];
+            
+            Game.playEchoSequence();
+        },
+
+        playEchoSequence: () => {
+            state.isPlayingSequence = true;
+            document.querySelectorAll('.piano-key').forEach(k => k.style.pointerEvents = 'none');
+            
+            state.echoSequence.forEach((note, index) => {
+                setTimeout(() => {
+                    Game.playPiano(note.freq, 0.6);
+                    const keyEl = document.querySelector(`.piano-key[data-id="${note.id}"]`);
+                    if (keyEl) {
+                        keyEl.classList.add('active');
+                        setTimeout(() => keyEl.classList.remove('active'), 200);
+                    }
+                    
+                    if (index === state.echoSequence.length - 1) {
+                        setTimeout(() => {
+                            state.isPlayingSequence = false;
+                            document.querySelectorAll('.piano-key').forEach(k => k.style.pointerEvents = 'auto');
+                        }, 600);
+                    }
+                }, index * 800);
+            });
+        },
+
+        handlePianoPress: (note, keyEl) => {
+            if (state.isPlayingSequence) return;
+            
+            Game.playPiano(note.freq, 0.6);
+            state.playerSequence.push(note.id);
+            
+            const currentIndex = state.playerSequence.length - 1;
+            if (state.playerSequence[currentIndex] !== state.echoSequence[currentIndex].id) {
+                keyEl.classList.add('wrong');
+                UI.showTeacherSpeech(false);
+                setTimeout(() => {
+                    keyEl.classList.remove('wrong');
+                    state.playerSequence = [];
+                    Game.playEchoSequence();
+                }, 1000);
+                return;
+            }
+
+            keyEl.classList.add('correct');
+            setTimeout(() => keyEl.classList.remove('correct'), 300);
+
+            if (state.playerSequence.length === state.echoSequence.length) {
+                UI.showTeacherSpeech(true);
+                state.correctCount++;
+                state.user.trophies += 2;
+                Auth.saveData();
+                
+                setTimeout(() => {
+                    state.level++;
+                    Game.nextQuestion();
+                }, 1500);
+            }
+        },
+
         handleCorrect: () => {
-            if (state.answering) return;
-            state.answering = true;
             state.correctCount++;
             state.user.trophies++;
             Auth.saveData();
@@ -629,8 +911,6 @@
         },
 
         handleWrong: (btn, correctAnswer) => {
-            if (state.answering) return;
-            state.answering = true;
             UI.showTeacherSpeech(false);
             document.querySelectorAll('.opt-btn').forEach(b => {
                 if (b.innerText === correctAnswer) b.classList.add('correct');
@@ -644,16 +924,18 @@
             let stars = 1;
             if (score >= 8) stars = 3;
             else if (score >= 5) stars = 2;
+            
             if (!state.user.progress[state.mode] || state.user.progress[state.mode] < stars) {
                 state.user.progress[state.mode] = stars;
                 Auth.saveData();
             }
-            document.getElementById('result-title').innerText = 'Уровень пройден!';
+
             document.getElementById('result-stars').innerText = '★'.repeat(stars) + '☆'.repeat(3-stars);
             document.getElementById('result-text').innerText = `Правильных ответов: ${score}/10`;
-            document.getElementById('result-next-btn').style.display = 'block';
-            document.getElementById('result-next-btn').onclick = Game.nextLevel;
+            document.getElementById('result-reward').innerText = score;
             document.getElementById('modal-result').classList.add('show');
+            
+            reachGoal('level_complete_' + state.mode); // Метрика: уровень пройден
         },
 
         nextLevel: () => {
@@ -661,157 +943,316 @@
             state.level++;
             state.questionIndex = 0;
             state.correctCount = 0;
-            state.answering = false;
             Game.nextQuestion();
         }
     };
 
+    // --- МУЛЬТИПЛЕЕР ---
     const Multiplayer = {
-        clearListener: () => {
-            if (state.mpListener) { clearInterval(state.mpListener); state.mpListener = null; }
-        },
         showMenu: () => {
             document.getElementById('mp-msg').innerText = '';
             document.getElementById('mp-code-input').value = '';
             UI.show('screen-mp-lobby');
         },
-        cancelWait: () => {
-            Multiplayer.clearListener();
-            if (state.mpRoom) fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' }).catch(()=>{});
-            state.mpRoom = null;
-            state.mpRole = null;
-            UI.show('screen-menu');
+
+        quickMatch: async () => {
+            const msgEl = document.getElementById('mp-msg');
+            msgEl.style.color = 'var(--accent)';
+            msgEl.innerText = "Поиск соперника...";
+            
+            try {
+                const res = await fetch(`${DB_URL}/rooms.json?orderBy="status"&equalTo="waiting"&limitToFirst=1`);
+                const rooms = await res.json();
+                
+                if (rooms && Object.keys(rooms).length > 0) {
+                    const roomId = Object.keys(rooms)[0];
+                    const roomData = rooms[roomId];
+                    
+                    if (roomData.host !== state.user.username) {
+                        state.mpRoom = roomId;
+                        state.mpRole = 'guest';
+                        state.mpIsBot = false;
+                        
+                        await fetch(`${DB_URL}/rooms/${roomId}.json`, {
+                            method: 'PATCH',
+                            body: JSON.stringify({ status: 'playing', guest: state.user.username })
+                        });
+                        
+                        msgEl.innerText = "";
+                        Multiplayer.startGame(); 
+                        reachGoal('mp_quick_match_found'); // Метрика
+                        return;
+                    }
+                }
+            } catch(e) { console.error("Ошибка поиска:", e); }
+
+            Multiplayer.createRoom(true);
         },
-        createRoom: async () => {
-            Multiplayer.clearListener();
+
+        createRoom: async (isQuickMatch = false) => {
             const code = Math.floor(1000 + Math.random() * 9000).toString();
             state.mpRoom = code;
             state.mpRole = 'host';
-            try {
-                await fetch(`${DB_URL}/rooms/${code}.json`, { method: 'PUT', body: JSON.stringify({ status: 'waiting', host: state.user.username, hostScore: 0, guestScore: 0, targetNote: '' }) });
-            } catch (e) {
-                document.getElementById('mp-msg').innerText = "Ошибка сети.";
-                return;
-            }
+            state.mpIsBot = false;
+            
+            await fetch(`${DB_URL}/rooms/${code}.json`, {
+                method: 'PUT',
+                body: JSON.stringify({ 
+                    status: 'waiting', 
+                    host: state.user.username, 
+                    hostScore: 0, 
+                    guestScore: 0, 
+                    targetNote: '' 
+                })
+            });
+
             document.getElementById('mp-room-code').innerText = code;
+            document.getElementById('mp-wait-title').innerText = isQuickMatch ? "Поиск соперника..." : "Ожидание игрока...";
+            document.getElementById('mp-wait-subtitle').innerText = isQuickMatch ? "Не нашли игрока? Начнем с ботом..." : "Скажите другу этот код:";
+            
             UI.show('screen-mp-wait');
+
+            if (isQuickMatch) {
+                reachGoal('mp_quick_match_search');
+                state.mpBotTimeout = setTimeout(() => {
+                    Multiplayer.startBotGame();
+                }, 5000);
+            } else {
+                reachGoal('mp_create_room');
+            }
+
             state.mpListener = setInterval(async () => {
+                if (!state.mpRoom) return;
                 try {
-                    const res = await fetch(`${DB_URL}/rooms/${code}.json`);
+                    const res = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`);
                     const data = await res.json();
-                    if (!data) { Multiplayer.clearListener(); return; }
-                    if (data.status === 'playing' && state.isMP === false) {
-                        Multiplayer.clearListener();
+                    
+                    if (!data) {
+                        clearInterval(state.mpListener);
+                        state.mpListener = null;
+                        return;
+                    }
+
+                    if (data.status === 'playing' && state.mpRole === 'host' && !state.isMP) {
+                        clearInterval(state.mpListener);
+                        if (state.mpBotTimeout) clearTimeout(state.mpBotTimeout);
+                        state.mpIsBot = false;
                         Multiplayer.startGame();
                     }
-                } catch (e) {}
-            }, 1500);
+                } catch(e) { console.error("Ошибка слушателя лобби:", e); }
+            }, 1000);
         },
+
+        startBotGame: async () => {
+            if (state.mpListener) {
+                clearInterval(state.mpListener);
+                state.mpListener = null;
+            }
+            
+            state.mpIsBot = true;
+            state.mpRole = 'host';
+            state.isMP = true;
+            
+            await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: 'playing', guest: 'BOT' })
+            });
+            
+            reachGoal('mp_bot_game'); // Метрика: игра с ботом
+            Multiplayer.startGame();
+        },
+
         joinRoom: async () => {
             const code = document.getElementById('mp-code-input').value.trim();
             const msg = document.getElementById('mp-msg');
-            if (!code) { msg.innerText = "Введите код."; return; }
-            try {
-                const res = await fetch(`${DB_URL}/rooms/${code}.json`);
-                const data = await res.json();
-                if (!data) { msg.innerText = "Комната не найдена."; return; }
-                if (data.status !== 'waiting') { msg.innerText = "В комнате уже играют."; return; }
-                state.mpRoom = code;
-                state.mpRole = 'guest';
-                await fetch(`${DB_URL}/rooms/${code}.json`, { method: 'PATCH', body: JSON.stringify({ status: 'playing', guest: state.user.username }) });
-                Multiplayer.startGame();
-            } catch (e) {
-                msg.innerText = "Ошибка сети.";
-            }
+            
+            if (code.length !== 4) { msg.innerText = "Введите 4 цифры."; return; }
+            
+            const res = await fetch(`${DB_URL}/rooms/${code}.json`);
+            const data = await res.json();
+
+            if (!data) { msg.innerText = "Комната не найдена."; return; }
+            if (data.status !== 'waiting') { msg.innerText = "В комнате уже играют."; return; }
+
+            state.mpRoom = code;
+            state.mpRole = 'guest';
+            state.mpIsBot = false;
+
+            await fetch(`${DB_URL}/rooms/${code}.json`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: 'playing', guest: state.user.username })
+            });
+
+            reachGoal('mp_join_room');
+            Multiplayer.startGame();
         },
+
+        cancelWait: async () => {
+            if (state.mpListener) { clearInterval(state.mpListener); state.mpListener = null; }
+            if (state.mpBotTimeout) { clearTimeout(state.mpBotTimeout); state.mpBotTimeout = null; }
+            
+            if (state.mpRoom && state.mpRole === 'host') {
+                await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' });
+            }
+            state.mpRoom = null;
+            UI.show('screen-mp-lobby');
+        },
+
         startGame: async () => {
-            Multiplayer.clearListener();
             state.isMP = true;
-            state.mpAnswering = false;
+            state.mpBotThinking = false;
             state.target = null;
+            
             document.getElementById('game-header-single').style.display = 'none';
             document.getElementById('game-header-mp').style.display = 'flex';
             document.getElementById('progress-container').style.display = 'none';
             document.getElementById('game-close-btn').onclick = () => Game.quit();
             document.getElementById('options-grid').innerHTML = '';
-            document.getElementById('options-grid').style.gridTemplateColumns = 'repeat(4, 1fr)';
-            document.getElementById('extra-controls').innerHTML = '';
-            document.getElementById('staff-box').innerHTML = '';
+            
+            document.getElementById('mp-p1').innerHTML = `Вы: <span>0</span>`;
+            document.getElementById('mp-p2').innerHTML = `${state.mpIsBot ? '🤖 БОТ' : 'Соперник'}: <span>0</span>`;
+
             UI.show('screen-game');
-            if (state.mpRole === 'host') Multiplayer.generateTarget();
+
+            if (state.mpRole === 'host') {
+                await Multiplayer.generateTarget();
+            }
+
+            if (state.mpListener) clearInterval(state.mpListener);
+            
             state.mpListener = setInterval(async () => {
+                if (!state.mpRoom) return;
+                
                 try {
                     const res = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`);
                     const data = await res.json();
-                    if (!data) { Multiplayer.clearListener(); return; }
-                    document.getElementById('mp-p1').innerHTML = `${state.user.username}: <span>${state.mpRole === 'host' ? data.hostScore : data.guestScore}</span>`;
-                    document.getElementById('mp-p2').innerHTML = `${state.mpRole === 'host' ? (data.guest || 'Гость') : (data.host || 'Хост')}: <span>${state.mpRole === 'host' ? data.guestScore : data.hostScore}</span>`;
-                    if (state.mpRole === 'guest' && data.targetNote && (!state.target || data.targetNote !== state.target.id)) {
-                        Multiplayer.renderMPQuestion(data.targetNote);
-                    }
-                    if (data.hostScore >= 5 || data.guestScore >= 5) {
-                        Multiplayer.clearListener();
-                        const winner = data.hostScore >= 5 ? data.host : data.guest;
-                        const isMe = winner === state.user.username;
-                        document.getElementById('result-title').innerText = isMe ? 'Победа!' : 'Поражение';
-                        document.getElementById('result-stars').innerText = isMe ? '🏆' : '💔';
-                        document.getElementById('result-text').innerText = `Победил ${winner}!`;
-                        document.getElementById('result-next-btn').style.display = 'none';
-                        document.getElementById('modal-result').classList.add('show');
-                        fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' }).catch(()=>{});
+                    
+                    if (!data) { 
+                        clearInterval(state.mpListener); 
                         state.isMP = false;
                         state.mpRoom = null;
-                        state.mpRole = null;
+                        UI.show('screen-menu'); 
+                        return; 
                     }
-                } catch (e) {}
+
+                    const isHost = (state.mpRole === 'host');
+                    const myScore = (isHost ? data.hostScore : data.guestScore) || 0;
+                    const oppScore = (isHost ? data.guestScore : data.hostScore) || 0;
+                    
+                    let oppName = isHost ? (data.guest === 'BOT' ? '🤖 БОТ' : (data.guest || 'Ожидание...')) : (data.host || 'Хост');
+                    
+                    document.getElementById('mp-p1').innerHTML = `Вы: <span>${myScore}</span>`;
+                    document.getElementById('mp-p2').innerHTML = `${oppName}: <span>${oppScore}</span>`;
+
+                    if (!isHost && data.targetNote && data.targetNote !== (state.target ? state.target.id : '')) {
+                        Multiplayer.renderMPQuestion(data.targetNote);
+                    }
+
+                    if (data.hostScore >= 5 || data.guestScore >= 5) {
+                        clearInterval(state.mpListener);
+                        if (state.mpBotTimeout) clearTimeout(state.mpBotTimeout);
+                        
+                        const winner = data.hostScore >= 5 ? data.host : data.guest;
+                        const isWinner = (winner === state.user.username);
+                        
+                        if (isWinner) reachGoal('mp_win'); else reachGoal('mp_lose');
+                        
+                        setTimeout(() => {
+                            alert(isWinner ? "🎉 Вы победили!" : "😢 Вы проиграли.");
+                            fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' });
+                            state.isMP = false;
+                            state.mpRoom = null;
+                            UI.show('screen-menu');
+                        }, 500);
+                        return;
+                    }
+
+                    if (state.mpIsBot && isHost && state.target && data.targetNote === state.target.id) {
+                        if (!state.mpBotThinking) {
+                            state.mpBotThinking = true;
+                            const delay = 1500 + Math.random() * 1500;
+                            
+                            setTimeout(async () => {
+                                if (!state.isMP || !state.mpRoom) return;
+                                
+                                const freshRes = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`);
+                                const freshData = await freshRes.json();
+                                
+                                if (freshData && freshData.targetNote === state.target.id && Math.random() < 0.7) {
+                                    const newScore = (freshData.guestScore || 0) + 1;
+                                    await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, {
+                                        method: 'PATCH',
+                                        body: JSON.stringify({ guestScore: newScore })
+                                    });
+                                }
+                                state.mpBotThinking = false;
+                            }, delay);
+                        }
+                    }
+                } catch(e) { console.error("Ошибка слушателя боя:", e); }
             }, 1000);
         },
+
         generateTarget: async () => {
             const pool = [...NOTES.octave1, ...NOTES.octave2];
             const note = pool[Math.floor(Math.random() * pool.length)];
-            await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'PATCH', body: JSON.stringify({ targetNote: note.id }) }).catch(()=>{});
+            
+            state.mpBotThinking = false;
+            
+            await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, {
+                method: 'PATCH',
+                body: JSON.stringify({ targetNote: note.id })
+            });
+            
             Multiplayer.renderMPQuestion(note.id);
         },
+
         renderMPQuestion: (noteId) => {
             const allNotes = [...NOTES.octave1, ...NOTES.octave2];
             const target = allNotes.find(n => n.id === noteId);
             if (!target) return;
+
             state.target = target;
-            state.mpAnswering = false;
-            Game.drawStaff(target.y);
-            Game.playTone(target.freq, 1);
+            Game.drawStaff(state.target.y);
+            Game.playPiano(state.target.freq);
+
             const grid = document.getElementById('options-grid');
-            grid.innerHTML = '';
             grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-            const correctName = target.name;
-            const uniqueNames = [...new Set(allNotes.map(n => n.name))].sort(() => Math.random() - 0.5);
+            grid.innerHTML = '';
+            
+            const uniqueNames = ['до', 'ре', 'ми', 'фа', 'соль', 'ля', 'си'].sort(() => Math.random() - 0.5);
+            
             uniqueNames.forEach(name => {
                 const b = document.createElement('button');
                 b.className = 'opt-btn'; b.innerText = name;
-                b.onclick = () => Multiplayer.handleMPAnswer(name, b, correctName);
+                b.onclick = () => Multiplayer.handleMPAnswer(name, b);
                 grid.appendChild(b);
             });
         },
-        handleMPAnswer: async (selectedName, btn, correctName) => {
-            if (state.mpAnswering) return;
-            if (selectedName === correctName) {
-                state.mpAnswering = true;
-                btn.classList.add('correct');
+
+        handleMPAnswer: async (selectedName, btn) => {
+            if (!state.target || btn.disabled) return;
+            
+            const isCorrect = selectedName === state.target.name;
+            
+            if (isCorrect) {
                 document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+                btn.classList.add('correct');
+                
                 const field = state.mpRole === 'host' ? 'hostScore' : 'guestScore';
-                try {
-                    const res = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`);
-                    const data = await res.json();
-                    if (!data) { state.mpAnswering = false; return; }
-                    await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'PATCH', body: JSON.stringify({ [field]: (data[field] || 0) + 1 }) });
-                } catch (e) {
-                    state.mpAnswering = false;
-                    return;
-                }
+                const res = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`);
+                const data = await res.json();
+                const currentScore = data[field] || 0;
+
+                await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ [field]: currentScore + 1 })
+                });
+
                 if (state.mpRole === 'host') {
-                    setTimeout(() => { state.mpAnswering = false; Multiplayer.generateTarget(); }, 1500);
-                } else {
-                    state.mpAnswering = false;
+                    setTimeout(() => {
+                        if (state.isMP) Multiplayer.generateTarget();
+                    }, 1200);
                 }
             } else {
                 btn.classList.add('wrong');
@@ -822,6 +1263,11 @@
 
     window.onload = () => {
         if (!Auth.checkSession()) UI.show('screen-auth');
+        
+        document.querySelector('button[onclick="UI.show(\'screen-modes\')"]').onclick = () => {
+            UI.loadModes();
+            UI.show('screen-modes');
+        };
     };
 </script>
 </body>
