@@ -33,11 +33,51 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); height: 100dvh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         
-        #app { width: 100%; height: 100dvh; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); position: relative; overflow: hidden; }
+        /* Изменено для учета рекламного блока */
+        body { 
+            background: var(--bg); 
+            height: 100dvh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+        }
+        
+        #app { 
+            width: 100%; 
+            height: calc(100dvh - 280px); /* Оставляем место для баннера */
+            background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(10px); 
+            position: relative; 
+            overflow: hidden; 
+            flex-shrink: 0;
+        }
+        
         @media (min-width: 600px) {
-            #app { max-width: 480px; height: 90dvh; max-height: 850px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+            #app { 
+                max-width: 480px; 
+                height: calc(90dvh - 260px); 
+                max-height: 600px; 
+                border-radius: 30px; 
+                box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
+            }
+        }
+
+        /* Стили для рекламного контейнера */
+        #bresults {
+            width: 100%;
+            max-width: 480px;
+            height: 260px; /* Фиксированная высота, чтобы не прыгала верстка */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.5); /* Легкий фон под рекламой */
+            z-index: 100;
+            margin-top: 10px;
+            border-radius: 15px;
+            overflow: hidden;
         }
 
         /* Screens */
@@ -282,6 +322,12 @@
             <button class="btn btn-secondary" onclick="UI.show('screen-modes'); document.getElementById('modal-result').classList.remove('show');">В меню</button>
         </div>
     </div>
+</div>
+
+<!-- БЛОК РЕКЛАМЫ -->
+<div id="bresults">
+    <script src="//s.contemo.ru/c.js"></script>
+    <script async defer>cbanner.load(24738, "contemo.ru");</script>
 </div>
 
 <script>
