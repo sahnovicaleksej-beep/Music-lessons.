@@ -29,7 +29,6 @@
             --text: #2c3e50;
             --accent: #00bcd4;
             --gold: #f1c40f;
-            --danger: #e74c3c;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -42,7 +41,7 @@
             overflow: hidden; 
         }
         
-        /* Игровое поле теперь занимает всё доступное место */
+        /* Игровое поле занимает всё пространство, КРОМЕ места под рекламу */
         #app { 
             width: 100%; 
             flex: 1; 
@@ -57,28 +56,32 @@
         @media (min-width: 600px) {
             #app { 
                 max-width: 480px; 
-                margin: 10px auto; 
-                height: 90dvh; 
-                max-height: 850px; 
-                border-radius: 30px; 
+                margin: 10px auto 0 auto; 
+                border-radius: 30px 30px 0 0; 
                 box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
                 flex: none;
+                height: calc(100dvh - 120px); /* 120px под рекламу */
             }
         }
 
-        /* Блок рекламы теперь не имеет жесткой высоты, он просто прижат к низу */
+        /* Блок рекламы: жестко фиксируем высоту под 728x90 */
         #bresults {
             width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
+            height: 100px; /* 90px баннер + 10px отступ */
             display: flex;
             justify-content: center;
             align-items: center;
-            background: transparent;
+            background: #e2e8f0; /* Легкий фон, чтобы не было прозрачной дыры */
             z-index: 100;
-            padding: 5px 0;
             flex-shrink: 0;
-            min-height: 260px; /* Резервируем место под стандартный квадрат, чтобы не было прыжков */
+            overflow: hidden;
+        }
+
+        /* Адаптив для баннера 728x90 на телефонах */
+        #bresults iframe, #bresults img, #bresults div {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
         }
 
         /* Screens */
@@ -86,7 +89,8 @@
         .screen.active { opacity: 1; pointer-events: auto; z-index: 10; }
 
         /* UI Elements */
-        .panel { background: var(--panel); padding: 20px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); width: 100%; max-width: 360px; text-align: center; max-height: 90%; overflow-y: auto;}
+        /* Добавлен overflow-y для прокрутки меню на маленьких экранах */
+        .panel { background: var(--panel); padding: 20px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); width: 100%; max-width: 360px; text-align: center; max-height: 100%; overflow-y: auto; }
         h2 { color: var(--text); margin-bottom: 15px; font-size: 22px; }
         
         input { width: 100%; padding: 15px; margin-bottom: 12px; border: 2px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; background: #f9f9f9; transition: 0.2s; text-align: center; font-weight: 700;}
@@ -325,7 +329,7 @@
     </div>
 </div>
 
-<!-- БЛОК РЕКЛАМЫ -->
+<!-- БЛОК РЕКЛАМЫ (728x90) -->
 <div id="bresults">
     <script src="//s.contemo.ru/c.js"></script>
     <script async defer>cbanner.load(24738, "contemo.ru");</script>
@@ -335,7 +339,6 @@
     // --- КОНФИГУРАЦИЯ ---
     const DB_URL = 'https://my-world-f590e-default-rtdb.firebaseio.com';
     
-    // Вспомогательная функция для безопасной отправки целей в Метрику
     function reachGoal(goalName) {
         if (typeof ym === 'function') {
             try { ym(114683681, 'reachGoal', goalName); } catch(e) {}
@@ -356,24 +359,25 @@
         'retro': { name: 'Ретро', class: 'theme-retro', price: 150 }
     };
 
+    // ИСПРАВЛЕННЫЕ КООРДИНАТЫ НОТ (СТРОГО ПО НОТНОМУ СТАНУ)
     const NOTES = {
         octave1: [
-            { id: 'до1', name: 'до', freq: 261.63, y: 90 },
-            { id: 'ре1', name: 'ре', freq: 293.66, y: 82.5 },
-            { id: 'ми1', name: 'ми', freq: 329.63, y: 75 },
-            { id: 'фа1', name: 'фа', freq: 349.23, y: 67.5 },
-            { id: 'соль1', name: 'соль', freq: 392.00, y: 60 },
-            { id: 'ля1', name: 'ля', freq: 440.00, y: 52.5 },
-            { id: 'си1', name: 'си', freq: 493.88, y: 45 }
+            { id: 'до1', name: 'до', freq: 261.63, y: 105 },   // C4 (добавочная линия снизу)
+            { id: 'ре1', name: 'ре', freq: 293.66, y: 97.5 },  // D4 (под станом)
+            { id: 'ми1', name: 'ми', freq: 329.63, y: 90 },    // E4 (1-я линия снизу)
+            { id: 'фа1', name: 'фа', freq: 349.23, y: 82.5 },  // F4 (1-й промежуток)
+            { id: 'соль1', name: 'соль', freq: 392.00, y: 75 },// G4 (2-я линия)
+            { id: 'ля1', name: 'ля', freq: 440.00, y: 67.5 },  // A4 (2-й промежуток)
+            { id: 'си1', name: 'си', freq: 493.88, y: 60 }     // B4 (3-я линия)
         ],
         octave2: [
-            { id: 'до2', name: 'до', freq: 523.25, y: 30 },
-            { id: 'ре2', name: 'ре', freq: 587.33, y: 22.5 },
-            { id: 'ми2', name: 'ми', freq: 659.25, y: 15 },
-            { id: 'фа2', name: 'фа', freq: 698.46, y: 7.5 },
-            { id: 'соль2', name: 'соль', freq: 783.99, y: 0 },
-            { id: 'ля2', name: 'ля', freq: 880.00, y: -7.5 },
-            { id: 'си2', name: 'си', freq: 987.77, y: -15 }
+            { id: 'до2', name: 'до', freq: 523.25, y: 52.5 },  // C5 (3-й промежуток)
+            { id: 'ре2', name: 'ре', freq: 587.33, y: 45 },    // D5 (4-я линия)
+            { id: 'ми2', name: 'ми', freq: 659.25, y: 37.5 },  // E5 (4-й промежуток)
+            { id: 'фа2', name: 'фа', freq: 698.46, y: 30 },    // F5 (5-я линия)
+            { id: 'соль2', name: 'соль', freq: 783.99, y: 22.5 },// G5 (над станом)
+            { id: 'ля2', name: 'ля', freq: 880.00, y: 15 },    // A5 (добавочная линия сверху)
+            { id: 'си2', name: 'си', freq: 987.77, y: 7.5 }    // B5 (над добавочной)
         ]
     };
 
@@ -395,37 +399,14 @@
         { name: 'Ми-бемоль мажор', symbols: ['Bb', 'Eb', 'Ab'] }
     ];
 
-    // --- СОСТОЯНИЕ ---
     let state = {
-        user: null,
-        audioCtx: null,
-        activeTeacher: 'default',
-        unlocked: ['default'],
-        inventory: [],
-        activeTheme: 'default',
-        
-        mode: null,
-        level: 1,
-        questionIndex: 0,
-        correctCount: 0,
-        target: null,
-        
-        echoSequence: [],
-        playerSequence: [],
-        isPlayingSequence: false,
-
-        // Мультиплеер
-        isMP: false,
-        mpRoom: null,
-        mpRole: null,
-        mpListener: null,
-        mpMatchmakingInterval: null,
-        mpIsBot: false,
-        mpBotTimeout: null,
-        mpBotThinking: false
+        user: null, audioCtx: null, activeTeacher: 'default', unlocked: ['default'],
+        inventory: [], activeTheme: 'default', mode: null, level: 1, questionIndex: 0,
+        correctCount: 0, target: null, echoSequence: [], playerSequence: [],
+        isPlayingSequence: false, isMP: false, mpRoom: null, mpRole: null,
+        mpListener: null, mpIsBot: false, mpBotTimeout: null, mpBotThinking: false
     };
 
-    // --- UI ЛОГИКА ---
     const UI = {
         show: (id) => {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -434,7 +415,6 @@
         updateHeader: () => {
             document.getElementById('user-trophy').innerText = state.user.trophies;
             document.getElementById('game-trophy').innerText = state.user.trophies;
-            
             let rank = "Новичок";
             if (state.user.trophies > 50) rank = "Ученик";
             if (state.user.trophies > 150) rank = "Любитель";
@@ -443,86 +423,62 @@
             document.getElementById('user-rank').innerText = rank;
         },
         loadTeachers: () => {
-            const list = document.getElementById('teacher-list');
-            list.innerHTML = '';
+            const list = document.getElementById('teacher-list'); list.innerHTML = '';
             for (const [key, t] of Object.entries(TEACHERS)) {
-                const isUnlocked = state.unlocked.includes(key);
-                const isActive = state.activeTeacher === key;
-                const div = document.createElement('div');
-                div.className = `mode-card`;
+                const isUnlocked = state.unlocked.includes(key); const isActive = state.activeTeacher === key;
+                const div = document.createElement('div'); div.className = `mode-card`;
                 div.style.display = 'flex'; div.style.alignItems = 'center'; div.style.gap = '15px';
                 div.style.border = isActive ? '2px solid var(--accent)' : '2px solid transparent';
                 if (!isUnlocked) div.style.opacity = '0.6';
-                
                 div.innerHTML = `<div style="font-size:30px">${t.icon}</div><div style="font-weight:bold; font-size:16px; flex:1; text-align:left;">${t.name}</div>${isUnlocked ? (isActive ? '✅' : '') : '🔒'}`;
-                
-                if (isUnlocked) {
-                    div.onclick = () => { state.activeTeacher = key; Auth.saveData(); UI.loadTeachers(); };
-                }
+                if (isUnlocked) div.onclick = () => { state.activeTeacher = key; Auth.saveData(); UI.loadTeachers(); };
                 list.appendChild(div);
             }
             UI.show('screen-teachers');
         },
         loadShop: () => {
-            const grid = document.getElementById('shop-list');
-            grid.innerHTML = '';
-            
+            const grid = document.getElementById('shop-list'); grid.innerHTML = '';
             for (const [key, t] of Object.entries(TEACHERS)) {
                 if (t.price > 0 && !state.unlocked.includes(key)) {
-                    const el = document.createElement('div');
-                    el.className = 'shop-item';
+                    const el = document.createElement('div'); el.className = 'shop-item';
                     el.innerHTML = `<div style="font-size:30px">${t.icon}</div><h4>${t.name}</h4><div class="shop-price">${t.price} 🏆</div><button class="btn btn-primary" onclick="Shop.buy('teacher','${key}',${t.price})">Купить</button>`;
                     grid.appendChild(el);
                 }
             }
-            
             for (const [key, t] of Object.entries(THEMES)) {
                 if (t.price > 0 && !state.inventory.includes(key)) {
-                    const el = document.createElement('div');
-                    el.className = 'shop-item';
+                    const el = document.createElement('div'); el.className = 'shop-item';
                     el.innerHTML = `<h4>${t.name}</h4><p>Смена фона</p><div class="shop-price">${t.price} 🏆</div><button class="btn btn-secondary" onclick="Shop.buy('theme','${key}',${t.price})">Купить</button>`;
                     grid.appendChild(el);
                 }
             }
-            
-            if (grid.innerHTML === '') grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#666;">Все скуплено! Вы богач.</p>';
+            if (grid.innerHTML === '') grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#666;">Все скуплено!</p>';
             UI.show('screen-shop');
         },
         loadModes: () => {
-            const grid = document.getElementById('mode-list');
-            grid.innerHTML = '';
-            
+            const grid = document.getElementById('mode-list'); grid.innerHTML = '';
             for (const [key, m] of Object.entries(MODES)) {
                 const stars = state.user.progress[key] || 0;
-                const div = document.createElement('div');
-                div.className = 'mode-card';
+                const div = document.createElement('div'); div.className = 'mode-card';
                 div.innerHTML = `${m.name} <div class="stars-display">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div>`;
-                div.onclick = () => Game.startMode(key);
-                grid.appendChild(div);
+                div.onclick = () => Game.startMode(key); grid.appendChild(div);
             }
-            
             const keyStars = state.user.progress['key'] || 0;
-            const kDiv = document.createElement('div');
-            kDiv.className = 'mode-card';
+            const kDiv = document.createElement('div'); kDiv.className = 'mode-card';
             kDiv.innerHTML = `Тональности <div class="stars-display">${'★'.repeat(keyStars)}${'☆'.repeat(3-keyStars)}</div>`;
-            kDiv.onclick = () => Game.startMode('key');
-            grid.appendChild(kDiv);
+            kDiv.onclick = () => Game.startMode('key'); grid.appendChild(kDiv);
         },
         showTeacherSpeech: (isCorrect) => {
             const teacher = TEACHERS[state.activeTeacher] || TEACHERS['default'];
             const phrases = isCorrect ? teacher.correct : teacher.wrong;
             document.getElementById('teacher-avatar').innerText = teacher.icon;
             document.getElementById('teacher-bubble').innerText = phrases[Math.floor(Math.random() * phrases.length)];
-            const area = document.getElementById('teacher-area');
-            area.classList.add('show');
+            const area = document.getElementById('teacher-area'); area.classList.add('show');
             setTimeout(() => area.classList.remove('show'), 1800);
         },
-        applyTheme: () => {
-            document.body.className = THEMES[state.activeTheme]?.class || '';
-        }
+        applyTheme: () => { document.body.className = THEMES[state.activeTheme]?.class || ''; }
     };
 
-    // --- АВТОРИЗАЦИЯ ---
     const Auth = {
         checkSession: () => {
             const savedUser = localStorage.getItem('music_app_user');
@@ -533,11 +489,8 @@
                 state.inventory = state.user.inventory || [];
                 state.activeTheme = state.user.activeTheme || 'default';
                 if (!state.user.progress) state.user.progress = {};
-                
                 document.getElementById('user-name').innerText = state.user.username;
-                UI.updateHeader();
-                UI.applyTheme();
-                UI.show('screen-menu');
+                UI.updateHeader(); UI.applyTheme(); UI.show('screen-menu');
                 return true;
             }
             return false;
@@ -546,167 +499,78 @@
             const u = document.getElementById('auth-user').value.trim().toLowerCase();
             const p = document.getElementById('auth-pass').value.trim();
             if (!u || !p) return document.getElementById('auth-err').innerText = "Заполните поля";
-
             try {
                 const res = await fetch(`${DB_URL}/users/${u}.json`);
                 const data = await res.json();
-
                 if (data && data.password !== p) return document.getElementById('auth-err').innerText = "Неверный пароль";
-
                 if (!data) {
                     const newUser = { password: p, trophies: 0, unlockedTeachers: ['default'], activeTeacher: 'default', progress: {}, lastDailyClaim: 0, inventory: [], activeTheme: 'default' };
                     await fetch(`${DB_URL}/users/${u}.json`, { method: 'PUT', body: JSON.stringify(newUser) });
-                    state.user = { username: u, ...newUser };
-                    reachGoal('registration'); // Метрика: регистрация
+                    state.user = { username: u, ...newUser }; reachGoal('registration');
                 } else {
-                    state.user = { 
-                        username: u, 
-                        password: p, 
-                        trophies: data.trophies || 0, 
-                        unlockedTeachers: data.unlockedTeachers || ['default'],
-                        activeTeacher: data.activeTeacher || 'default',
-                        progress: data.progress || {},
-                        lastDailyClaim: data.lastDailyClaim || 0,
-                        inventory: data.inventory || [],
-                        activeTheme: data.activeTheme || 'default'
-                    };
-                    reachGoal('login'); // Метрика: вход
+                    state.user = { username: u, password: p, trophies: data.trophies || 0, unlockedTeachers: data.unlockedTeachers || ['default'], activeTeacher: data.activeTeacher || 'default', progress: data.progress || {}, lastDailyClaim: data.lastDailyClaim || 0, inventory: data.inventory || [], activeTheme: data.activeTheme || 'default' };
+                    reachGoal('login');
                 }
-                
-                state.unlocked = state.user.unlockedTeachers;
-                state.activeTeacher = state.user.activeTeacher;
-                state.inventory = state.user.inventory;
-                state.activeTheme = state.user.activeTheme;
+                state.unlocked = state.user.unlockedTeachers; state.activeTeacher = state.user.activeTeacher;
+                state.inventory = state.user.inventory; state.activeTheme = state.user.activeTheme;
                 localStorage.setItem('music_app_user', JSON.stringify(state.user));
-                
                 document.getElementById('user-name').innerText = state.user.username;
-                UI.updateHeader();
-                UI.applyTheme();
-                UI.show('screen-menu');
-            } catch (e) {
-                document.getElementById('auth-err').innerText = "Ошибка сети";
-            }
+                UI.updateHeader(); UI.applyTheme(); UI.show('screen-menu');
+            } catch (e) { document.getElementById('auth-err').innerText = "Ошибка сети"; }
         },
         saveData: async () => {
             if (!state.user) return;
-            const payload = {
-                trophies: state.user.trophies,
-                unlockedTeachers: state.unlocked,
-                activeTeacher: state.activeTeacher,
-                progress: state.user.progress,
-                lastDailyClaim: state.user.lastDailyClaim,
-                inventory: state.inventory,
-                activeTheme: state.activeTheme
-            };
+            const payload = { trophies: state.user.trophies, unlockedTeachers: state.unlocked, activeTeacher: state.activeTeacher, progress: state.user.progress, lastDailyClaim: state.user.lastDailyClaim, inventory: state.inventory, activeTheme: state.activeTheme };
             localStorage.setItem('music_app_user', JSON.stringify({...state.user, ...payload}));
             await fetch(`${DB_URL}/users/${state.user.username}.json`, { method: 'PATCH', body: JSON.stringify(payload) });
             UI.updateHeader();
         },
-        logout: () => {
-            localStorage.removeItem('music_app_user');
-            state.user = null;
-            UI.show('screen-auth');
-            document.getElementById('auth-user').value = '';
-            document.getElementById('auth-pass').value = '';
-        }
+        logout: () => { localStorage.removeItem('music_app_user'); state.user = null; UI.show('screen-auth'); document.getElementById('auth-user').value = ''; document.getElementById('auth-pass').value = ''; }
     };
 
-    // --- МАГАЗИН ---
     const Shop = {
         buy: async (type, id, price) => {
             if (state.user.trophies < price) return alert("Недостаточно трофеев!");
-            
             state.user.trophies -= price;
-            
-            if (type === 'teacher') {
-                state.unlocked.push(id);
-                state.activeTeacher = id;
-            } else if (type === 'theme') {
-                state.inventory.push(id);
-                state.activeTheme = id;
-                UI.applyTheme();
-            }
-            
-            await Auth.saveData();
-            UI.loadShop();
-            reachGoal('buy_' + type); // Метрика: покупка
-            alert("Покупка успешна!");
+            if (type === 'teacher') { state.unlocked.push(id); state.activeTeacher = id; }
+            else if (type === 'theme') { state.inventory.push(id); state.activeTheme = id; UI.applyTheme(); }
+            await Auth.saveData(); UI.loadShop(); reachGoal('buy_' + type); alert("Покупка успешна!");
         }
     };
 
-    // --- ЕЖЕДНЕВНЫЙ ПОДАРОК ---
     const Daily = {
         claim: async () => {
-            const now = Date.now();
-            const lastClaim = state.user.lastDailyClaim || 0;
-            const cooldown = 24 * 60 * 60 * 1000;
-
-            if (now - lastClaim < cooldown) {
-                const hoursLeft = Math.ceil((cooldown - (now - lastClaim)) / (1000 * 60 * 60));
-                return alert(`Подарок уже получен! Ждите ${hoursLeft} ч.`);
-            }
-
-            state.user.lastDailyClaim = now;
-            state.user.trophies += 5;
-            await Auth.saveData();
-            reachGoal('daily_claim'); // Метрика: ежедневный подарок
-            alert("Вы получили 5 трофеев! 🎁");
+            const now = Date.now(); const lastClaim = state.user.lastDailyClaim || 0; const cooldown = 24 * 60 * 60 * 1000;
+            if (now - lastClaim < cooldown) { const hoursLeft = Math.ceil((cooldown - (now - lastClaim)) / (1000 * 60 * 60)); return alert(`Подарок уже получен! Ждите ${hoursLeft} ч.`); }
+            state.user.lastDailyClaim = now; state.user.trophies += 5; await Auth.saveData(); reachGoal('daily_claim'); alert("Вы получили 5 трофеев! 🎁");
         }
     };
 
-    // --- СОЦИАЛЬНЫЕ ---
     const Social = {
         sendGift: async () => {
-            const friend = document.getElementById('gift-user').value.trim().toLowerCase();
-            const msg = document.getElementById('gift-msg');
-
+            const friend = document.getElementById('gift-user').value.trim().toLowerCase(); const msg = document.getElementById('gift-msg');
             if (friend === state.user.username) { msg.style.color = '#f44336'; msg.innerText = "Нельзя подарить себе!"; return; }
             if (state.user.trophies < 1) { msg.style.color = '#f44336'; msg.innerText = "У вас нет трофеев!"; return; }
-
             try {
-                const res = await fetch(`${DB_URL}/users/${friend}.json`);
-                const friendData = await res.json();
-
+                const res = await fetch(`${DB_URL}/users/${friend}.json`); const friendData = await res.json();
                 if (!friendData) { msg.style.color = '#f44336'; msg.innerText = "Игрок не найден."; return; }
-
-                state.user.trophies -= 1;
-                await Auth.saveData();
-                
+                state.user.trophies -= 1; await Auth.saveData();
                 const newFriendTrophies = (friendData.trophies || 0) + 1;
                 await fetch(`${DB_URL}/users/${friend}.json`, { method: 'PATCH', body: JSON.stringify({ trophies: newFriendTrophies }) });
-
-                msg.style.color = '#4caf50';
-                msg.innerText = `Трофей отправлен игроку ${friend}!`;
-                document.getElementById('gift-user').value = '';
-                reachGoal('send_gift'); // Метрика: подарок
-            } catch (e) {
-                msg.style.color = '#f44336';
-                msg.innerText = "Ошибка сети.";
-            }
+                msg.style.color = '#4caf50'; msg.innerText = `Трофей отправлен игроку ${friend}!`; document.getElementById('gift-user').value = ''; reachGoal('send_gift');
+            } catch (e) { msg.style.color = '#f44336'; msg.innerText = "Ошибка сети."; }
         },
         applyPromo: () => {
-            const code = document.getElementById('promo-input').value.trim();
-            const msg = document.getElementById('promo-msg');
+            const code = document.getElementById('promo-input').value.trim(); const msg = document.getElementById('promo-msg');
             if (code === 'HungryCircle') {
                 if (!state.unlocked.includes('green_circle')) {
-                    state.unlocked.push('green_circle');
-                    state.activeTeacher = 'green_circle';
-                    Auth.saveData();
-                    msg.style.color = '#4caf50';
-                    msg.innerText = "Учитель 'Зелёный Круг' разблокирован!";
-                    reachGoal('promo_activate'); // Метрика: активация промокода
-                } else {
-                    msg.style.color = '#f39c12';
-                    msg.innerText = "Уже активирован.";
-                }
-            } else {
-                msg.style.color = '#f44336';
-                msg.innerText = "Неверный код.";
-            }
+                    state.unlocked.push('green_circle'); state.activeTeacher = 'green_circle'; Auth.saveData();
+                    msg.style.color = '#4caf50'; msg.innerText = "Учитель 'Зелёный Круг' разблокирован!"; reachGoal('promo_activate');
+                } else { msg.style.color = '#f39c12'; msg.innerText = "Уже активирован."; }
+            } else { msg.style.color = '#f44336'; msg.innerText = "Неверный код."; }
         }
     };
 
-    // --- ИГРОВАЯ ЛОГИКА ---
     const Game = {
         initAudio: () => {
             if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -714,92 +578,74 @@
         },
         playPiano: (freq, duration = 1) => {
             if (!state.audioCtx) return;
-            const ctx = state.audioCtx;
-            const t = ctx.currentTime;
+            const ctx = state.audioCtx; const t = ctx.currentTime;
             const osc1 = ctx.createOscillator(); osc1.type = 'triangle'; osc1.frequency.value = freq;
             const osc2 = ctx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = freq * 2;
             const filter = ctx.createBiquadFilter(); filter.type = 'lowpass';
             filter.frequency.setValueAtTime(3000, t); filter.frequency.exponentialRampToValueAtTime(300, t + duration);
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.5, t + 0.02); gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
-            
             osc1.connect(filter); osc2.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
             osc1.start(t); osc2.start(t); osc1.stop(t + duration); osc2.stop(t + duration);
         },
 
         startMode: (mode) => {
-            state.isMP = false;
-            state.mode = mode;
-            state.level = 1;
-            state.questionIndex = 0;
-            state.correctCount = 0;
-            state.echoSequence = [];
-            state.playerSequence = [];
-            Game.initAudio();
-            
+            state.isMP = false; state.mode = mode; state.level = 1; state.questionIndex = 0; state.correctCount = 0;
+            state.echoSequence = []; state.playerSequence = []; Game.initAudio();
             document.getElementById('progress-container').style.display = mode === 'echo' ? 'none' : 'block';
             document.getElementById('game-close-btn').onclick = () => UI.show('screen-modes');
-            
-            UI.show('screen-game');
-            reachGoal('start_game_' + mode); // Метрика: начал режим
-            Game.nextQuestion();
+            UI.show('screen-game'); reachGoal('start_game_' + mode); Game.nextQuestion();
         },
 
         quit: () => {
-            if (state.isMP && state.mpRoom) {
-                fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' });
-                if (state.mpListener) clearInterval(state.mpListener);
-            }
-            state.isMP = false;
-            UI.show('screen-menu');
+            if (state.isMP && state.mpRoom) { fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' }); if (state.mpListener) clearInterval(state.mpListener); }
+            state.isMP = false; UI.show('screen-menu');
         },
 
-        updateProgress: () => {
-            document.getElementById('progress-fill').style.width = `${(state.questionIndex / 10) * 100}%`;
-        },
+        updateProgress: () => { document.getElementById('progress-fill').style.width = `${(state.questionIndex / 10) * 100}%`; },
 
         nextQuestion: () => {
             if (state.mode !== 'echo' && state.questionIndex >= 10) return Game.finishLevel();
-            
             Game.updateProgress();
-            document.getElementById('options-grid').innerHTML = '';
-            document.getElementById('extra-controls').innerHTML = '';
-            document.getElementById('piano-container').style.display = 'none';
-            document.getElementById('options-grid').style.display = 'grid';
-            
+            document.getElementById('options-grid').innerHTML = ''; document.getElementById('extra-controls').innerHTML = '';
+            document.getElementById('piano-container').style.display = 'none'; document.getElementById('options-grid').style.display = 'grid';
             if (state.mode === 'echo') Game.startEcho();
             else if (state.mode === 'key') Game.renderKeyQuestion();
             else if (state.mode === 'ear') Game.renderEarQuestion();
             else Game.renderNoteQuestion();
         },
 
+        // ИСПРАВЛЕННЫЙ РЕНДЕР СТАНА (С ДОБАВОЧНЫМИ ЛИНИЯМИ)
         drawStaff: (noteY = null, symbols = null) => {
             let svg = `
                 <svg class="note-staff" viewBox="0 0 300 150">
+                    <!-- 5 основных линий стана -->
                     <line x1="50" y1="30" x2="250" y2="30" stroke="#333" stroke-width="2"/>
                     <line x1="50" y1="45" x2="250" y2="45" stroke="#333" stroke-width="2"/>
                     <line x1="50" y1="60" x2="250" y2="60" stroke="#333" stroke-width="2"/>
                     <line x1="50" y1="75" x2="250" y2="75" stroke="#333" stroke-width="2"/>
                     <line x1="50" y1="90" x2="250" y2="90" stroke="#333" stroke-width="2"/>
-                    <text x="60" y="95" font-size="70" fill="var(--text)">𝄞</text>
+                    <text x="60" y="95" font-size="70" fill="#2c3e50">𝄞</text>
             `;
+            
             if (noteY !== null) {
-                if (noteY > 90) svg += `<line x1="135" y1="${noteY}" x2="165" y2="${noteY}" stroke="#333" stroke-width="2"/>`;
-                if (noteY < 30 && noteY > 0) svg += `<line x1="135" y1="${noteY}" x2="165" y2="${noteY}" stroke="#333" stroke-width="2"/>`;
-                if (noteY <= 0) {
-                    svg += `<line x1="135" y1="${noteY}" x2="165" y2="${noteY}" stroke="#333" stroke-width="2"/>`;
-                    svg += `<line x1="135" y1="${noteY + 15}" x2="165" y2="${noteY + 15}" stroke="#333" stroke-width="2"/>`;
-                }
+                // Добавочные линии снизу (для до1, ре1)
+                if (noteY >= 105) svg += `<line x1="135" y1="105" x2="165" y2="105" stroke="#333" stroke-width="2"/>`;
+                // Добавочные линии сверху (для ля2, си2)
+                if (noteY <= 15) svg += `<line x1="135" y1="15" x2="165" y2="15" stroke="#333" stroke-width="2"/>`;
+
+                // Сама нота (головка и штиль)
                 svg += `
-                    <ellipse cx="150" cy="${noteY}" rx="8" ry="6" transform="rotate(-20 150 ${noteY})" fill="var(--text)"/>
-                    <line x1="158" y1="${noteY}" x2="158" y2="${noteY - 35}" stroke="var(--text)" stroke-width="2"/>
+                    <ellipse cx="150" cy="${noteY}" rx="8" ry="6" transform="rotate(-20 150 ${noteY})" fill="#2c3e50"/>
+                    <line x1="158" y1="${noteY}" x2="158" y2="${noteY - 35}" stroke="#2c3e50" stroke-width="2"/>
                 `;
             }
+            
             if (symbols) {
                 let sharpY = [30, 52.5, 37.5]; let flatY = [60, 37.5, 67.5];
                 symbols.forEach((sym, i) => {
-                    if (sym.includes('#')) svg += `<text x="${100 + i*15}" y="${sharpY[i]+5}" font-size="30" fill="var(--text)">♯</text>`;
-                    else svg += `<text x="${100 + i*15}" y="${flatY[i]+5}" font-size="30" fill="var(--text)">♭</text>`;
+                    if (sym.includes('#')) svg += `<text x="${100 + i*15}" y="${sharpY[i]+5}" font-size="30" fill="#2c3e50">♯</text>`;
+                    else svg += `<text x="${100 + i*15}" y="${flatY[i]+5}" font-size="30" fill="#2c3e50">♭</text>`;
                 });
             }
             svg += `</svg>`;
@@ -811,16 +657,12 @@
             if (state.mode === 'treble1') pool = NOTES.octave1;
             else if (state.mode === 'treble2') pool = NOTES.octave2;
             else pool = [...NOTES.octave1, ...NOTES.octave2];
-
             state.target = pool[Math.floor(Math.random() * pool.length)];
-            Game.drawStaff(state.target.y);
-            Game.playPiano(state.target.freq);
-
+            Game.drawStaff(state.target.y); Game.playPiano(state.target.freq);
             const uniqueNames = [...new Set(pool.map(n => n.name))].sort(() => Math.random() - 0.5);
             const grid = document.getElementById('options-grid');
             uniqueNames.forEach(name => {
-                const b = document.createElement('button');
-                b.className = 'opt-btn'; b.innerText = name;
+                const b = document.createElement('button'); b.className = 'opt-btn'; b.innerText = name;
                 b.onclick = () => {
                     if (name === state.target.name) { b.classList.add('correct'); Game.handleCorrect(); }
                     else { b.classList.add('wrong'); Game.handleWrong(b, state.target.name); }
@@ -834,12 +676,10 @@
             document.getElementById('staff-box').innerHTML = `<div style="font-size:80px; text-align:center; margin-top:20px;">🎧</div>`;
             document.getElementById('extra-controls').innerHTML = `<button class="btn btn-primary btn-sm" style="max-width:200px; margin:0 auto;" onclick="Game.playPiano(${state.target.freq}, 1.5)">🔊 Слушать снова</button>`;
             Game.playPiano(state.target.freq, 1.5);
-
             const uniqueNames = [...new Set(NOTES.octave1.map(n => n.name))].sort(() => Math.random() - 0.5);
             const grid = document.getElementById('options-grid');
             uniqueNames.forEach(name => {
-                const b = document.createElement('button');
-                b.className = 'opt-btn'; b.innerText = name;
+                const b = document.createElement('button'); b.className = 'opt-btn'; b.innerText = name;
                 b.onclick = () => {
                     if (name === state.target.name) { b.classList.add('correct'); Game.handleCorrect(); }
                     else { b.classList.add('wrong'); Game.handleWrong(b, state.target.name); }
@@ -852,11 +692,9 @@
             state.target = KEYS_DATA[Math.floor(Math.random() * KEYS_DATA.length)];
             Game.drawStaff(null, state.target.symbols);
             const options = [...KEYS_DATA].sort(() => Math.random() - 0.5);
-            const grid = document.getElementById('options-grid');
-            grid.style.gridTemplateColumns = '1fr 1fr';
+            const grid = document.getElementById('options-grid'); grid.style.gridTemplateColumns = '1fr 1fr';
             options.forEach(k => {
-                const b = document.createElement('button');
-                b.className = 'opt-btn'; b.style.borderRadius = '15px'; b.style.aspectRatio = 'auto'; b.style.padding = '15px'; b.innerText = k.name;
+                const b = document.createElement('button'); b.className = 'opt-btn'; b.style.borderRadius = '15px'; b.style.aspectRatio = 'auto'; b.style.padding = '15px'; b.innerText = k.name;
                 b.onclick = () => {
                     if (k.name === state.target.name) { b.classList.add('correct'); Game.handleCorrect(); }
                     else { b.classList.add('wrong'); Game.handleWrong(b, state.target.name); }
@@ -868,47 +706,26 @@
         startEcho: () => {
             document.getElementById('staff-box').innerHTML = `<div style="font-size:60px; text-align:center; margin-top:40px;">🎹</div>`;
             document.getElementById('options-grid').style.display = 'none';
-            document.getElementById('piano-container').style.display = 'flex';
-            document.getElementById('piano-container').innerHTML = '';
-            
+            document.getElementById('piano-container').style.display = 'flex'; document.getElementById('piano-container').innerHTML = '';
             NOTES.octave1.forEach(n => {
-                const key = document.createElement('div');
-                key.className = 'piano-key';
-                key.innerText = n.name;
-                key.dataset.id = n.id;
-                key.dataset.freq = n.freq;
-                key.onclick = () => Game.handlePianoPress(n, key);
+                const key = document.createElement('div'); key.className = 'piano-key'; key.innerText = n.name;
+                key.dataset.id = n.id; key.dataset.freq = n.freq; key.onclick = () => Game.handlePianoPress(n, key);
                 document.getElementById('piano-container').appendChild(key);
             });
-
-            const length = Math.min(3 + Math.floor(state.level / 2), 5);
-            state.echoSequence = [];
-            for (let i = 0; i < length; i++) {
-                state.echoSequence.push(NOTES.octave1[Math.floor(Math.random() * NOTES.octave1.length)]);
-            }
-            state.playerSequence = [];
-            
-            Game.playEchoSequence();
+            const length = Math.min(3 + Math.floor(state.level / 2), 5); state.echoSequence = [];
+            for (let i = 0; i < length; i++) { state.echoSequence.push(NOTES.octave1[Math.floor(Math.random() * NOTES.octave1.length)]); }
+            state.playerSequence = []; Game.playEchoSequence();
         },
 
         playEchoSequence: () => {
-            state.isPlayingSequence = true;
-            document.querySelectorAll('.piano-key').forEach(k => k.style.pointerEvents = 'none');
-            
+            state.isPlayingSequence = true; document.querySelectorAll('.piano-key').forEach(k => k.style.pointerEvents = 'none');
             state.echoSequence.forEach((note, index) => {
                 setTimeout(() => {
                     Game.playPiano(note.freq, 0.6);
                     const keyEl = document.querySelector(`.piano-key[data-id="${note.id}"]`);
-                    if (keyEl) {
-                        keyEl.classList.add('active');
-                        setTimeout(() => keyEl.classList.remove('active'), 200);
-                    }
-                    
+                    if (keyEl) { keyEl.classList.add('active'); setTimeout(() => keyEl.classList.remove('active'), 200); }
                     if (index === state.echoSequence.length - 1) {
-                        setTimeout(() => {
-                            state.isPlayingSequence = false;
-                            document.querySelectorAll('.piano-key').forEach(k => k.style.pointerEvents = 'auto');
-                        }, 600);
+                        setTimeout(() => { state.isPlayingSequence = false; document.querySelectorAll('.piano-key').forEach(k => k.style.pointerEvents = 'auto'); }, 600);
                     }
                 }, index * 800);
             });
@@ -916,43 +733,22 @@
 
         handlePianoPress: (note, keyEl) => {
             if (state.isPlayingSequence) return;
-            
-            Game.playPiano(note.freq, 0.6);
-            state.playerSequence.push(note.id);
-            
+            Game.playPiano(note.freq, 0.6); state.playerSequence.push(note.id);
             const currentIndex = state.playerSequence.length - 1;
             if (state.playerSequence[currentIndex] !== state.echoSequence[currentIndex].id) {
-                keyEl.classList.add('wrong');
-                UI.showTeacherSpeech(false);
-                setTimeout(() => {
-                    keyEl.classList.remove('wrong');
-                    state.playerSequence = [];
-                    Game.playEchoSequence();
-                }, 1000);
+                keyEl.classList.add('wrong'); UI.showTeacherSpeech(false);
+                setTimeout(() => { keyEl.classList.remove('wrong'); state.playerSequence = []; Game.playEchoSequence(); }, 1000);
                 return;
             }
-
-            keyEl.classList.add('correct');
-            setTimeout(() => keyEl.classList.remove('correct'), 300);
-
+            keyEl.classList.add('correct'); setTimeout(() => keyEl.classList.remove('correct'), 300);
             if (state.playerSequence.length === state.echoSequence.length) {
-                UI.showTeacherSpeech(true);
-                state.correctCount++;
-                state.user.trophies += 2;
-                Auth.saveData();
-                
-                setTimeout(() => {
-                    state.level++;
-                    Game.nextQuestion();
-                }, 1500);
+                UI.showTeacherSpeech(true); state.correctCount++; state.user.trophies += 2; Auth.saveData();
+                setTimeout(() => { state.level++; Game.nextQuestion(); }, 1500);
             }
         },
 
         handleCorrect: () => {
-            state.correctCount++;
-            state.user.trophies++;
-            Auth.saveData();
-            UI.showTeacherSpeech(true);
+            state.correctCount++; state.user.trophies++; Auth.saveData(); UI.showTeacherSpeech(true);
             document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
             setTimeout(() => { state.questionIndex++; Game.nextQuestion(); }, 1000);
         },
@@ -960,277 +756,132 @@
         handleWrong: (btn, correctAnswer) => {
             UI.showTeacherSpeech(false);
             document.querySelectorAll('.opt-btn').forEach(b => {
-                if (b.innerText === correctAnswer) b.classList.add('correct');
-                b.disabled = true;
+                if (b.innerText === correctAnswer) b.classList.add('correct'); b.disabled = true;
             });
             setTimeout(() => { state.questionIndex++; Game.nextQuestion(); }, 1800);
         },
 
         finishLevel: () => {
-            const score = state.correctCount;
-            let stars = 1;
-            if (score >= 8) stars = 3;
-            else if (score >= 5) stars = 2;
-            
-            if (!state.user.progress[state.mode] || state.user.progress[state.mode] < stars) {
-                state.user.progress[state.mode] = stars;
-                Auth.saveData();
-            }
-
+            const score = state.correctCount; let stars = 1;
+            if (score >= 8) stars = 3; else if (score >= 5) stars = 2;
+            if (!state.user.progress[state.mode] || state.user.progress[state.mode] < stars) { state.user.progress[state.mode] = stars; Auth.saveData(); }
             document.getElementById('result-stars').innerText = '★'.repeat(stars) + '☆'.repeat(3-stars);
             document.getElementById('result-text').innerText = `Правильных ответов: ${score}/10`;
-            document.getElementById('result-reward').innerText = score;
-            document.getElementById('modal-result').classList.add('show');
-            
-            reachGoal('level_complete_' + state.mode); // Метрика: уровень пройден
+            document.getElementById('result-reward').innerText = score; document.getElementById('modal-result').classList.add('show');
+            reachGoal('level_complete_' + state.mode);
         },
 
         nextLevel: () => {
-            document.getElementById('modal-result').classList.remove('show');
-            state.level++;
-            state.questionIndex = 0;
-            state.correctCount = 0;
-            Game.nextQuestion();
+            document.getElementById('modal-result').classList.remove('show'); state.level++; state.questionIndex = 0; state.correctCount = 0; Game.nextQuestion();
         }
     };
 
-    // --- МУЛЬТИПЛЕЕР ---
     const Multiplayer = {
         showMenu: () => {
-            document.getElementById('mp-msg').innerText = '';
-            document.getElementById('mp-code-input').value = '';
-            UI.show('screen-mp-lobby');
+            document.getElementById('mp-msg').innerText = ''; document.getElementById('mp-code-input').value = ''; UI.show('screen-mp-lobby');
         },
-
         quickMatch: async () => {
-            const msgEl = document.getElementById('mp-msg');
-            msgEl.style.color = 'var(--accent)';
-            msgEl.innerText = "Поиск соперника...";
-            
+            const msgEl = document.getElementById('mp-msg'); msgEl.style.color = 'var(--accent)'; msgEl.innerText = "Поиск соперника...";
             try {
                 const res = await fetch(`${DB_URL}/rooms.json?orderBy="status"&equalTo="waiting"&limitToFirst=1`);
                 const rooms = await res.json();
-                
                 if (rooms && Object.keys(rooms).length > 0) {
-                    const roomId = Object.keys(rooms)[0];
-                    const roomData = rooms[roomId];
-                    
+                    const roomId = Object.keys(rooms)[0]; const roomData = rooms[roomId];
                     if (roomData.host !== state.user.username) {
-                        state.mpRoom = roomId;
-                        state.mpRole = 'guest';
-                        state.mpIsBot = false;
-                        
-                        await fetch(`${DB_URL}/rooms/${roomId}.json`, {
-                            method: 'PATCH',
-                            body: JSON.stringify({ status: 'playing', guest: state.user.username })
-                        });
-                        
-                        msgEl.innerText = "";
-                        Multiplayer.startGame(); 
-                        reachGoal('mp_quick_match_found'); // Метрика
-                        return;
+                        state.mpRoom = roomId; state.mpRole = 'guest'; state.mpIsBot = false;
+                        await fetch(`${DB_URL}/rooms/${roomId}.json`, { method: 'PATCH', body: JSON.stringify({ status: 'playing', guest: state.user.username }) });
+                        msgEl.innerText = ""; Multiplayer.startGame(); reachGoal('mp_quick_match_found'); return;
                     }
                 }
             } catch(e) { console.error("Ошибка поиска:", e); }
-
             Multiplayer.createRoom(true);
         },
-
         createRoom: async (isQuickMatch = false) => {
             const code = Math.floor(1000 + Math.random() * 9000).toString();
-            state.mpRoom = code;
-            state.mpRole = 'host';
-            state.mpIsBot = false;
-            
+            state.mpRoom = code; state.mpRole = 'host'; state.mpIsBot = false;
             await fetch(`${DB_URL}/rooms/${code}.json`, {
-                method: 'PUT',
-                body: JSON.stringify({ 
-                    status: 'waiting', 
-                    host: state.user.username, 
-                    hostScore: 0, 
-                    guestScore: 0, 
-                    targetNote: '' 
-                })
+                method: 'PUT', body: JSON.stringify({ status: 'waiting', host: state.user.username, hostScore: 0, guestScore: 0, targetNote: '' })
             });
-
             document.getElementById('mp-room-code').innerText = code;
             document.getElementById('mp-wait-title').innerText = isQuickMatch ? "Поиск соперника..." : "Ожидание игрока...";
             document.getElementById('mp-wait-subtitle').innerText = isQuickMatch ? "Не нашли игрока? Начнем с ботом..." : "Скажите другу этот код:";
-            
             UI.show('screen-mp-wait');
-
-            if (isQuickMatch) {
-                reachGoal('mp_quick_match_search');
-                state.mpBotTimeout = setTimeout(() => {
-                    Multiplayer.startBotGame();
-                }, 5000);
-            } else {
-                reachGoal('mp_create_room');
-            }
-
+            if (isQuickMatch) { reachGoal('mp_quick_match_search'); state.mpBotTimeout = setTimeout(() => { Multiplayer.startBotGame(); }, 5000); } else { reachGoal('mp_create_room'); }
             state.mpListener = setInterval(async () => {
                 if (!state.mpRoom) return;
                 try {
-                    const res = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`);
-                    const data = await res.json();
-                    
-                    if (!data) {
-                        clearInterval(state.mpListener);
-                        state.mpListener = null;
-                        return;
-                    }
-
+                    const res = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`); const data = await res.json();
+                    if (!data) { clearInterval(state.mpListener); state.mpListener = null; return; }
                     if (data.status === 'playing' && state.mpRole === 'host' && !state.isMP) {
-                        clearInterval(state.mpListener);
-                        if (state.mpBotTimeout) clearTimeout(state.mpBotTimeout);
-                        state.mpIsBot = false;
-                        Multiplayer.startGame();
+                        clearInterval(state.mpListener); if (state.mpBotTimeout) clearTimeout(state.mpBotTimeout);
+                        state.mpIsBot = false; Multiplayer.startGame();
                     }
                 } catch(e) { console.error("Ошибка слушателя лобби:", e); }
             }, 1000);
         },
-
         startBotGame: async () => {
-            if (state.mpListener) {
-                clearInterval(state.mpListener);
-                state.mpListener = null;
-            }
-            
-            state.mpIsBot = true;
-            state.mpRole = 'host';
-            state.isMP = true;
-            
-            await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, {
-                method: 'PATCH',
-                body: JSON.stringify({ status: 'playing', guest: 'BOT' })
-            });
-            
-            reachGoal('mp_bot_game'); // Метрика: игра с ботом
-            Multiplayer.startGame();
+            if (state.mpListener) { clearInterval(state.mpListener); state.mpListener = null; }
+            state.mpIsBot = true; state.mpRole = 'host'; state.isMP = true;
+            await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'PATCH', body: JSON.stringify({ status: 'playing', guest: 'BOT' }) });
+            reachGoal('mp_bot_game'); Multiplayer.startGame();
         },
-
         joinRoom: async () => {
-            const code = document.getElementById('mp-code-input').value.trim();
-            const msg = document.getElementById('mp-msg');
-            
+            const code = document.getElementById('mp-code-input').value.trim(); const msg = document.getElementById('mp-msg');
             if (code.length !== 4) { msg.innerText = "Введите 4 цифры."; return; }
-            
-            const res = await fetch(`${DB_URL}/rooms/${code}.json`);
-            const data = await res.json();
-
+            const res = await fetch(`${DB_URL}/rooms/${code}.json`); const data = await res.json();
             if (!data) { msg.innerText = "Комната не найдена."; return; }
             if (data.status !== 'waiting') { msg.innerText = "В комнате уже играют."; return; }
-
-            state.mpRoom = code;
-            state.mpRole = 'guest';
-            state.mpIsBot = false;
-
-            await fetch(`${DB_URL}/rooms/${code}.json`, {
-                method: 'PATCH',
-                body: JSON.stringify({ status: 'playing', guest: state.user.username })
-            });
-
-            reachGoal('mp_join_room');
-            Multiplayer.startGame();
+            state.mpRoom = code; state.mpRole = 'guest'; state.mpIsBot = false;
+            await fetch(`${DB_URL}/rooms/${code}.json`, { method: 'PATCH', body: JSON.stringify({ status: 'playing', guest: state.user.username }) });
+            reachGoal('mp_join_room'); Multiplayer.startGame();
         },
-
         cancelWait: async () => {
             if (state.mpListener) { clearInterval(state.mpListener); state.mpListener = null; }
             if (state.mpBotTimeout) { clearTimeout(state.mpBotTimeout); state.mpBotTimeout = null; }
-            
-            if (state.mpRoom && state.mpRole === 'host') {
-                await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' });
-            }
-            state.mpRoom = null;
-            UI.show('screen-mp-lobby');
+            if (state.mpRoom && state.mpRole === 'host') { await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' }); }
+            state.mpRoom = null; UI.show('screen-mp-lobby');
         },
-
         startGame: async () => {
-            state.isMP = true;
-            state.mpBotThinking = false;
-            state.target = null;
-            
-            document.getElementById('game-header-single').style.display = 'none';
-            document.getElementById('game-header-mp').style.display = 'flex';
-            document.getElementById('progress-container').style.display = 'none';
-            document.getElementById('game-close-btn').onclick = () => Game.quit();
+            state.isMP = true; state.mpBotThinking = false; state.target = null;
+            document.getElementById('game-header-single').style.display = 'none'; document.getElementById('game-header-mp').style.display = 'flex';
+            document.getElementById('progress-container').style.display = 'none'; document.getElementById('game-close-btn').onclick = () => Game.quit();
             document.getElementById('options-grid').innerHTML = '';
-            
             document.getElementById('mp-p1').innerHTML = `Вы: <span>0</span>`;
             document.getElementById('mp-p2').innerHTML = `${state.mpIsBot ? '🤖 БОТ' : 'Соперник'}: <span>0</span>`;
-
             UI.show('screen-game');
-
-            if (state.mpRole === 'host') {
-                await Multiplayer.generateTarget();
-            }
-
+            if (state.mpRole === 'host') { await Multiplayer.generateTarget(); }
             if (state.mpListener) clearInterval(state.mpListener);
-            
             state.mpListener = setInterval(async () => {
                 if (!state.mpRoom) return;
-                
                 try {
-                    const res = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`);
-                    const data = await res.json();
-                    
-                    if (!data) { 
-                        clearInterval(state.mpListener); 
-                        state.isMP = false;
-                        state.mpRoom = null;
-                        UI.show('screen-menu'); 
-                        return; 
-                    }
-
+                    const res = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`); const data = await res.json();
+                    if (!data) { clearInterval(state.mpListener); state.isMP = false; state.mpRoom = null; UI.show('screen-menu'); return; }
                     const isHost = (state.mpRole === 'host');
                     const myScore = (isHost ? data.hostScore : data.guestScore) || 0;
                     const oppScore = (isHost ? data.guestScore : data.hostScore) || 0;
-                    
                     let oppName = isHost ? (data.guest === 'BOT' ? '🤖 БОТ' : (data.guest || 'Ожидание...')) : (data.host || 'Хост');
-                    
                     document.getElementById('mp-p1').innerHTML = `Вы: <span>${myScore}</span>`;
                     document.getElementById('mp-p2').innerHTML = `${oppName}: <span>${oppScore}</span>`;
-
-                    if (!isHost && data.targetNote && data.targetNote !== (state.target ? state.target.id : '')) {
-                        Multiplayer.renderMPQuestion(data.targetNote);
-                    }
-
+                    if (!isHost && data.targetNote && data.targetNote !== (state.target ? state.target.id : '')) { Multiplayer.renderMPQuestion(data.targetNote); }
                     if (data.hostScore >= 5 || data.guestScore >= 5) {
-                        clearInterval(state.mpListener);
-                        if (state.mpBotTimeout) clearTimeout(state.mpBotTimeout);
-                        
-                        const winner = data.hostScore >= 5 ? data.host : data.guest;
-                        const isWinner = (winner === state.user.username);
-                        
+                        clearInterval(state.mpListener); if (state.mpBotTimeout) clearTimeout(state.mpBotTimeout);
+                        const winner = data.hostScore >= 5 ? data.host : data.guest; const isWinner = (winner === state.user.username);
                         if (isWinner) reachGoal('mp_win'); else reachGoal('mp_lose');
-                        
                         setTimeout(() => {
                             alert(isWinner ? "🎉 Вы победили!" : "😢 Вы проиграли.");
                             fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'DELETE' });
-                            state.isMP = false;
-                            state.mpRoom = null;
-                            UI.show('screen-menu');
-                        }, 500);
-                        return;
+                            state.isMP = false; state.mpRoom = null; UI.show('screen-menu');
+                        }, 500); return;
                     }
-
                     if (state.mpIsBot && isHost && state.target && data.targetNote === state.target.id) {
                         if (!state.mpBotThinking) {
-                            state.mpBotThinking = true;
-                            const delay = 1500 + Math.random() * 1500;
-                            
+                            state.mpBotThinking = true; const delay = 1500 + Math.random() * 1500;
                             setTimeout(async () => {
                                 if (!state.isMP || !state.mpRoom) return;
-                                
-                                const freshRes = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`);
-                                const freshData = await freshRes.json();
-                                
+                                const freshRes = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`); const freshData = await freshRes.json();
                                 if (freshData && freshData.targetNote === state.target.id && Math.random() < 0.7) {
                                     const newScore = (freshData.guestScore || 0) + 1;
-                                    await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, {
-                                        method: 'PATCH',
-                                        body: JSON.stringify({ guestScore: newScore })
-                                    });
+                                    await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'PATCH', body: JSON.stringify({ guestScore: newScore }) });
                                 }
                                 state.mpBotThinking = false;
                             }, delay);
@@ -1239,82 +890,40 @@
                 } catch(e) { console.error("Ошибка слушателя боя:", e); }
             }, 1000);
         },
-
         generateTarget: async () => {
-            const pool = [...NOTES.octave1, ...NOTES.octave2];
-            const note = pool[Math.floor(Math.random() * pool.length)];
-            
+            const pool = [...NOTES.octave1, ...NOTES.octave2]; const note = pool[Math.floor(Math.random() * pool.length)];
             state.mpBotThinking = false;
-            
-            await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, {
-                method: 'PATCH',
-                body: JSON.stringify({ targetNote: note.id })
-            });
-            
+            await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'PATCH', body: JSON.stringify({ targetNote: note.id }) });
             Multiplayer.renderMPQuestion(note.id);
         },
-
         renderMPQuestion: (noteId) => {
-            const allNotes = [...NOTES.octave1, ...NOTES.octave2];
-            const target = allNotes.find(n => n.id === noteId);
+            const allNotes = [...NOTES.octave1, ...NOTES.octave2]; const target = allNotes.find(n => n.id === noteId);
             if (!target) return;
-
-            state.target = target;
-            Game.drawStaff(state.target.y);
-            Game.playPiano(state.target.freq);
-
-            const grid = document.getElementById('options-grid');
-            grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-            grid.innerHTML = '';
-            
+            state.target = target; Game.drawStaff(state.target.y); Game.playPiano(state.target.freq);
+            const grid = document.getElementById('options-grid'); grid.style.gridTemplateColumns = 'repeat(4, 1fr)'; grid.innerHTML = '';
             const uniqueNames = ['до', 'ре', 'ми', 'фа', 'соль', 'ля', 'си'].sort(() => Math.random() - 0.5);
-            
             uniqueNames.forEach(name => {
-                const b = document.createElement('button');
-                b.className = 'opt-btn'; b.innerText = name;
-                b.onclick = () => Multiplayer.handleMPAnswer(name, b);
-                grid.appendChild(b);
+                const b = document.createElement('button'); b.className = 'opt-btn'; b.innerText = name;
+                b.onclick = () => Multiplayer.handleMPAnswer(name, b); grid.appendChild(b);
             });
         },
-
         handleMPAnswer: async (selectedName, btn) => {
             if (!state.target || btn.disabled) return;
-            
             const isCorrect = selectedName === state.target.name;
-            
             if (isCorrect) {
-                document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-                btn.classList.add('correct');
-                
+                document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true); btn.classList.add('correct');
                 const field = state.mpRole === 'host' ? 'hostScore' : 'guestScore';
-                const res = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`);
-                const data = await res.json();
+                const res = await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`); const data = await res.json();
                 const currentScore = data[field] || 0;
-
-                await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ [field]: currentScore + 1 })
-                });
-
-                if (state.mpRole === 'host') {
-                    setTimeout(() => {
-                        if (state.isMP) Multiplayer.generateTarget();
-                    }, 1200);
-                }
-            } else {
-                btn.classList.add('wrong');
-                btn.disabled = true;
-            }
+                await fetch(`${DB_URL}/rooms/${state.mpRoom}.json`, { method: 'PATCH', body: JSON.stringify({ [field]: currentScore + 1 }) });
+                if (state.mpRole === 'host') { setTimeout(() => { if (state.isMP) Multiplayer.generateTarget(); }, 1200); }
+            } else { btn.classList.add('wrong'); btn.disabled = true; }
         }
     };
 
     window.onload = () => {
         if (!Auth.checkSession()) UI.show('screen-auth');
-        
-        document.querySelector('button[onclick="UI.show(\'screen-modes\')"]').onclick = () => {
-            UI.loadModes();
-            UI.show('screen-modes');
-        };
+        document.querySelector('button[onclick="UI.show(\'screen-modes\')"]').onclick = () => { UI.loadModes(); UI.show('screen-modes'); };
     };
 </script>
 </body>
