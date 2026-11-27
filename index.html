@@ -39,47 +39,46 @@
             height: 100dvh; 
             display: flex; 
             flex-direction: column; 
-            justify-content: flex-start; 
-            align-items: center; 
             overflow: hidden; 
         }
         
+        /* Игровое поле теперь занимает всё доступное место */
         #app { 
             width: 100%; 
-            height: calc(100dvh - 290px); /* Оставляем место для квадратного баннера */
+            flex: 1; 
             background: rgba(255, 255, 255, 0.2); 
             backdrop-filter: blur(10px); 
             position: relative; 
             overflow: hidden; 
-            flex-shrink: 0;
-            margin-top: 10px;
-            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
         }
         
         @media (min-width: 600px) {
             #app { 
                 max-width: 480px; 
-                height: calc(90dvh - 290px); 
-                max-height: 600px; 
+                margin: 10px auto; 
+                height: 90dvh; 
+                max-height: 850px; 
                 border-radius: 30px; 
                 box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
+                flex: none;
             }
         }
 
-        /* Стили для рекламного контейнера */
+        /* Блок рекламы теперь не имеет жесткой высоты, он просто прижат к низу */
         #bresults {
             width: 100%;
             max-width: 480px;
-            height: 280px; /* Фиксированная высота под квадрат */
+            margin: 0 auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: transparent; /* Убрали серый фон, чтобы не пугал, если реклама не загрузится */
+            background: transparent;
             z-index: 100;
-            margin-top: 10px;
-            border-radius: 15px;
-            overflow: hidden;
+            padding: 5px 0;
             flex-shrink: 0;
+            min-height: 260px; /* Резервируем место под стандартный квадрат, чтобы не было прыжков */
         }
 
         /* Screens */
@@ -87,7 +86,7 @@
         .screen.active { opacity: 1; pointer-events: auto; z-index: 10; }
 
         /* UI Elements */
-        .panel { background: var(--panel); padding: 20px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); width: 100%; max-width: 360px; text-align: center; }
+        .panel { background: var(--panel); padding: 20px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); width: 100%; max-width: 360px; text-align: center; max-height: 90%; overflow-y: auto;}
         h2 { color: var(--text); margin-bottom: 15px; font-size: 22px; }
         
         input { width: 100%; padding: 15px; margin-bottom: 12px; border: 2px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; background: #f9f9f9; transition: 0.2s; text-align: center; font-weight: 700;}
@@ -115,15 +114,15 @@
         .stars-display { font-size: 12px; color: var(--gold); margin-top: 5px; letter-spacing: 1px;}
 
         /* Game Area */
-        .game-container { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 20px; padding-top: 60px; }
+        .game-container { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 20px; padding-top: 60px; overflow-y: auto;}
         
-        .progress-bar { width: 100%; max-width: 400px; height: 10px; background: #ddd; border-radius: 5px; margin-bottom: 10px; overflow: hidden; }
+        .progress-bar { width: 100%; max-width: 400px; height: 10px; background: #ddd; border-radius: 5px; margin-bottom: 10px; overflow: hidden; flex-shrink: 0; }
         .progress-fill { height: 100%; background: var(--green); width: 0%; transition: width 0.3s; }
         
-        .staff-wrapper { width: 100%; flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+        .staff-wrapper { width: 100%; flex: 1; display: flex; align-items: center; justify-content: center; position: relative; min-height: 150px;}
         .staff-box { width: 100%; max-width: 400px; background: var(--panel); border-radius: 20px; aspect-ratio: 2/1; box-shadow: 0 8px 20px rgba(0,0,0,0.1); padding: 10px; position: relative; }
         
-        .options-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-width: 400px; margin-top: 20px; }
+        .options-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-width: 400px; margin-top: 20px; flex-shrink: 0; }
         .opt-btn { background: var(--green); border: none; border-radius: 50%; aspect-ratio: 1; font-size: 14px; font-weight: 800; color: var(--text); box-shadow: 0 5px 0 #689f38; transition: 0.1s; display: flex; align-items: center; justify-content: center; padding: 5px;}
         .opt-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #689f38; }
         .opt-btn.correct { background: #4caf50; color: white; box-shadow: 0 5px 0 #388e3c; }
@@ -131,7 +130,7 @@
         .opt-btn:disabled { pointer-events: none; }
 
         /* Piano */
-        .piano-container { display: flex; width: 100%; max-width: 400px; height: 120px; margin-top: 20px; position: relative; }
+        .piano-container { display: flex; width: 100%; max-width: 400px; height: 120px; margin-top: 20px; position: relative; flex-shrink: 0; }
         .piano-key { flex: 1; background: #fff; border: 1px solid #ccc; border-radius: 0 0 10px 10px; margin: 0 2px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; font-weight: 800; color: #999; cursor: pointer; box-shadow: 0 4px 0 #ddd; transition: 0.1s; }
         .piano-key:active, .piano-key.active { background: #e0e0e0; transform: translateY(4px); box-shadow: 0 0 0 #ddd; }
         .piano-key.correct { background: #a5d6a7; }
